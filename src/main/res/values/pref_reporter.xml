@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_acra_alwaysaccept">Automatically sends reports</string>
+    <string name="pref_acra_alwaysaccept_summary">Automatically sends reports to the developers without asking</string>
+
+    <string name="pref_acra_user_email">Add my Email</string>
+    <string name="pref_acra_user_email_summary">Add your email, so the developer can contact you when it is needed</string>
+
+</resources>

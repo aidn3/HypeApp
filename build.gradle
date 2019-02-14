@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.aidn5.hypeapp"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 1
+        versionName "2.0"
+    }
+
+    buildTypes {
+        release {
+            //debuggable true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    /*
+     https://github.com/ACRA/acra:
+     Error reporter handles unexpected errors and send them to the developer
+     */
+    def acraVersion = '5.2.1'
+    //The core of the reporter: Used to create own class to interact with the server
+    implementation "ch.acra:acra-core:$acraVersion"
+    //Limiter: to limit the number of crash reports per user
+    implementation "ch.acra:acra-limiter:$acraVersion"
+    //Show a notification on exception and let the user decides whether to send report
+    implementation "ch.acra:acra-notification:$acraVersion"
+    //schedules the reports
+    implementation "ch.acra:acra-advanced-scheduler:$acraVersion"
+
+    /*
+     https://github.com/square/picasso
+     A powerful image downloading and caching library for Android
+    */
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    /*
+     https://github.com/nhachicha/SnappyDB
+     key-value database for Android it's an alternative for SQLite
+     can outperform SQLite in read/write operations
+    */
+    implementation 'com.snappydb:snappydb-lib:0.5.2'
+
+    /*
+     AppCompat is a set of support libraries which can be used
+     to make the apps developed with newer versions work with older versions
+    */
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:exifinterface:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+}

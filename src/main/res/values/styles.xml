@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="defaultTheme" parent="Theme.AppCompat.Light">
+        <item name="actionBarStyle">@style/defaultActionBarTheme</item>
+    </style>
+
+    <style name="defaultActionBarTheme" parent="Base.Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="defaultThemeWithTitle" parent="defaultTheme">
+        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">true</item>
+    </style>
+
+
+    <style name="MainActivityTheme" parent="defaultTheme" />
+
+    <style name="SettingsUIActivityTheme" parent="defaultThemeWithTitle" />
+
+    <style name="SetApiActivityTheme" parent="defaultThemeWithTitle" />
+
+    <style name="BestFriendsListTheme" parent="defaultThemeWithTitle" />
+
+    <style name="SelectPlayersActivityTheme" parent="defaultThemeWithTitle" />
+
+    <style name="SetForumAccountsTheme" parent="defaultThemeWithTitle" />
+
+    <style name="WelcomeScreenActivityTheme" parent="defaultTheme" />
+
+
+</resources>

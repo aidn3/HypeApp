@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="showNotifications"
+        android:title="@string/Show_Notifications" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:dependency="showNotifications"
+        android:key="showNotificationsOnlyNotAFK"
+        android:summary="@string/showNotificationsOnlyNotAFK_summary"
+        android:title="@string/showNotificationsOnlyNotAFK_title" />
+
+    <ListPreference
+        android:defaultValue="21600"
+        android:dependency="showNotifications"
+        android:entries="@array/sync_every_titles"
+        android:entryValues="@array/sync_every_values"
+        android:key="notifiersSyncEvery"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/sync_every" />
+
+
+    <PreferenceCategory
+        android:dependency="showNotifications"
+        android:title="@string/General_App_Notifications">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showNotificationOnDeveloperAnnouncement"
+            android:summary="@string/showNotificationOnDeveloperAnnouncement_summary"
+            android:title="@string/showNotificationOnDeveloperAnnouncement_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:dependency="showNotifications"
+        android:title="@string/Forums_Notifications">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showNotificationOnForumsNotifications"
+            android:summary="@string/showNotificationOnForumsNotifications_summary"
+            android:title="@string/showNotificationOnForumsNotifications_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:dependency="showNotifications"
+        android:title="@string/Friends_Notifications">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showNotificationOnFriendRemoved"
+            android:summary="@string/showNotificationOnFriendRemoved_summary"
+            android:title="@string/showNotificationOnFriendRemoved_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showNotificationOnFriendIgnChanged"
+            android:summary="@string/showNotificationOnFriendIgnChanged_summary"
+            android:title="@string/showNotificationOnFriendIgnChanged_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showNotificationOnFriendJoined"
+            android:summary="@string/showNotificationOnFriendJoined_summary"
+            android:title="@string/showNotificationOnFriendJoined_title" />
+
+        <Preference
+            android:key="myBestFriendsList"
+            android:summary="@string/myBestFriendsList_summary"
+            android:title="@string/myBestFriendsList_title">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="com.aidn5.hypeapp.activities.BestFriendsList"
+                android:targetPackage="com.aidn5.hypeapp" />
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:dependency="showNotifications"
+        android:title="@string/Guilds_Notifications">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showNotificationOnGuildMemberJoins"
+            android:summary="@string/showNotificationOnGuildMemberJoins_summary"
+            android:title="@string/showNotificationOnGuildMemberJoins_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showNotificationOnGuildMemberLeaves"
+            android:summary="@string/showNotificationOnGuildMemberLeaves_summary"
+            android:title="@string/showNotificationOnGuildMemberLeaves_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showNotificationOnGuildSelfLeaves"
+            android:summary="@string/showNotificationOnGuildSelfLeaves_summary"
+            android:title="@string/showNotificationOnGuildSelfLeaves_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

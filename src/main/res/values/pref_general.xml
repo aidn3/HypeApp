@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="useExternalServer_summary">Loading, Fetching and saving data consume battery and internet. Using an external server helps reducing the pressure on your phone.</string>
+    <string name="useExternalServer_title">Use External Server</string>
+
+    <string name="Forums_Account">Forums Account</string>
+    <string name="Hypixel_API">Hypixel API</string>
+</resources>

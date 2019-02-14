@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Notifiers Settings-->
+    <string name="Show_Notifications">Show Notifications</string>
+    <string name="showNotificationsOnlyNotAFK_summary">Save the notifications while you are away from the phone and show it when you are back</string>
+    <string name="showNotificationsOnlyNotAFK_title">Don\'t disturb while me away</string>
+    <string name="sync_every">Sync every</string>
+    <string-array name="sync_every_titles">
+        <item>Never</item>
+        <item>10 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hours</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
+        <item>2 days</item>
+    </string-array>
+    <string-array name="sync_every_values">
+        <item>-1</item>
+        <item>600</item>
+        <item>1800</item>
+        <item>3600</item>
+        <item>10800</item>
+        <item>21600</item>
+        <item>43200</item>
+        <item>86400</item>
+        <item>172800</item>
+    </string-array>
+
+
+    <!--General App Notifications Settings-->
+    <string name="General_App_Notifications">General App Notifications</string>
+    <string name="showNotificationOnDeveloperAnnouncement_summary">When the developers of this APP would give an announcement</string>
+    <string name="showNotificationOnDeveloperAnnouncement_title">Developers Announcements</string>
+
+
+    <!--Forums Notifications Settings-->
+    <string name="Forums_Notifications">Forums Notifications</string>
+    <string name="showNotificationOnForumsNotifications_summary">Show forums notifications</string>
+    <string name="showNotificationOnForumsNotifications_title">Forums Notifications</string>
+
+
+    <!--Friend Notifications Settings-->
+    <string name="Friends_Notifications">Friends Notifications</string>
+    <string name="showNotificationOnFriendRemoved_summary">When a friend removes you while you being offline</string>
+    <string name="showNotificationOnFriendRemoved_title">Friend removed</string>
+    <string name="showNotificationOnFriendIgnChanged_summary">When your friend changes their Username</string>
+    <string name="showNotificationOnFriendIgnChanged_title">Friend\'s IGN changed</string>
+    <string name="showNotificationOnFriendJoined_title">Special friend joined</string>
+    <string name="showNotificationOnFriendJoined_summary">Notifies me when my best friend joins Hypixel network</string>
+    <string name="myBestFriendsList_summary">Show My-Best-Friends-List</string>
+    <string name="myBestFriendsList_title">My Best Friends List</string>
+
+
+    <!--Guild Notifications Settings-->
+    <string name="Guilds_Notifications">Guilds Notifications</string>
+    <string name="showNotificationOnGuildMemberJoins_summary">When a new member joins the guild</string>
+    <string name="showNotificationOnGuildMemberJoins_title">Member joins</string>
+    <string name="showNotificationOnGuildMemberLeaves_summary">When a member leaves the guild</string>
+    <string name="showNotificationOnGuildMemberLeaves_title">Member leaves</string>
+    <string name="showNotificationOnGuildSelfLeaves_summary">When get kicked from the guild</string>
+    <string name="showNotificationOnGuildSelfLeaves_title">Kicked from the guild</string>
+
+</resources>

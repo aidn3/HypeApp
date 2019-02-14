@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:inputType="textNoSuggestions"
+        android:key="username"
+        android:title="@string/username" />
+
+    <Preference
+        android:key="forumsAccountAdded"
+        android:title="@string/Forums_Account">
+        <!--//TODO: Add intent to run the setter-->
+    </Preference>
+    <Preference
+        android:key="hypixelAPI"
+        android:title="@string/Hypixel_API">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.aidn5.hypeapp.activities.settings.SetApiActivity"
+            android:targetPackage="com.aidn5.hypeapp" />
+    </Preference>
+</PreferenceScreen>

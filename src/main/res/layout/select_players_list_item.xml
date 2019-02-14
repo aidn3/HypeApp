@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <CheckBox
+        android:id="@+id/bflP_item_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bflP_item_1"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:id="@+id/bflP_item_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/bflP_item_checkbox"
+        android:layout_toRightOf="@+id/bflP_item_checkbox"
+        android:background="?attr/selectableItemBackground"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/bflP_item_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_toEndOf="@+id/bflP_item_image"
+            android:layout_toRightOf="@+id/bflP_item_image"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/bflP_item_text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/bflP_item_text1"
+            android:layout_alignStart="@+id/bflP_item_text1"
+            android:layout_alignLeft="@+id/bflP_item_text1"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="" />
+
+        <ImageView
+            android:id="@+id/bflP_item_image"
+            android:layout_width="50dp"
+
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/default_player_head"
+            android:contentDescription="@null"
+            android:cropToPadding="false" />
+
+    </RelativeLayout>
+</RelativeLayout>

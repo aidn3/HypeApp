@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="friendsEventRemovedTitle">Friend\'s removal</string>
+    <string name="friendsEventRemovedMessage">%s has removed you!</string>
+
+</resources>
