@@ -1,28 +1,36 @@
 package com.aidn5.hypeapp.hypixelapi;
 
-public class HypixelReplay {
-    public final boolean isSuccess;
+import com.aidn5.hypeapp.hypixelapi.exception.HypixelApiException;
 
-    public final Object value;
-    public final String fullResponse;
+public final class HypixelReplay {
+	public final boolean isSuccess;
 
-    public final HypixelApiException exception;
+	public final Object value;
+	public final String fullResponse;
+
+	public final HypixelApiException exception;
+	private final long dataOld;
 
 
-    HypixelReplay(HypixelApiException e, String fullResponse) {
-        exception = e;
-        this.fullResponse = fullResponse;
+	HypixelReplay(HypixelApiException e, String fullResponse) {
+		exception = e;
+		this.fullResponse = fullResponse;
 
-        isSuccess = false;
-        value = null;
+		isSuccess = false;
+		value = null;
+		dataOld = -1;
+	}
 
-    }
+	HypixelReplay(Object value, String fullResponse, long dataOld) {
+		this.value = value;
+		this.fullResponse = fullResponse;
 
-    HypixelReplay(Object value, String fullResponse) {
-        this.value = value;
-        this.fullResponse = fullResponse;
+		isSuccess = true;
+		exception = null;
+		this.dataOld = dataOld;
+	}
 
-        isSuccess = true;
-        exception = null;
-    }
+	public boolean isDataFromCache() {
+		return dataOld > 0;
+	}
 }
