@@ -18,16 +18,16 @@ import org.acra.annotation.AcraScheduler;
 @AcraLimiter()
 @AcraNotification(resTitle = R.string.unhandled_exception, resText = R.string.unhandled_exception_message, resChannelName = R.string.app_notification_channel)
 public class G extends Application {
-    private static IgnProvider ignProvider;
-    private static SharedPreferences settings;
+	private static IgnProvider ignProvider;
+	private static SharedPreferences settings;
 
-    public static IgnProvider getIgnProvider(Context context) {
-        return ignProvider != null ? ignProvider : (ignProvider = new IgnProvider(context));
-    }
+	public static IgnProvider getIgnProvider(Context context) {
+		return ignProvider != null ? ignProvider : (ignProvider = new IgnProvider(context));
+	}
 
-    public static SharedPreferences getSettings(Context context) {
-        return settings != null ? settings : (settings = PreferenceManager.getDefaultSharedPreferences(context));
-    }
+	public static SharedPreferences getSettings(Context context) {
+		return settings != null ? settings : (settings = PreferenceManager.getDefaultSharedPreferences(context));
+	}
 
     /*@Override
     public void onCreate() {
@@ -41,12 +41,12 @@ public class G extends Application {
         });
     }*/
 
-    @Override
-    protected void attachBaseContext(Context context) {
-        super.attachBaseContext(context);
+	@Override
+	protected void attachBaseContext(Context context) {
+		super.attachBaseContext(context);
 
-        //setACRA();
-    }
+		//setACRA();
+	}
 
     /*private void setACRA() {
         CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);

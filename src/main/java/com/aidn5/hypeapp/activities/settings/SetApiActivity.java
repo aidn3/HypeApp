@@ -30,156 +30,156 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class SetApiActivity extends ActivityUI {
-    private EditText apiEditText;
-    private boolean isDestroyed = false;
-    private boolean isApiSet = false;
+	private EditText apiEditText;
+	private boolean isDestroyed = false;
+	private boolean isApiSet = false;
 
-    @Override
-    protected void onDestroy() {
-        isDestroyed = true;
+	@Override
+	protected void onDestroy() {
+		isDestroyed = true;
 
-        Intent returnIntent = new Intent();
-        setResult(
-                isApiSet ? Activity.RESULT_OK : Activity.RESULT_CANCELED,
-                returnIntent);
+		Intent returnIntent = new Intent();
+		setResult(
+				isApiSet ? Activity.RESULT_OK : Activity.RESULT_CANCELED,
+				returnIntent);
 
-        super.onDestroy();
-    }
+		super.onDestroy();
+	}
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.set_api);
+		setContentView(R.layout.set_api);
 
-        apiEditText = findViewById(R.id.set_api_txt);
-        findViewById(R.id.set_api_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new HypixelAPIChecker(SetApiActivity.this).execute(apiEditText.getText().toString());
-            }
-        });
-    }
-
-
-    @SuppressLint("StaticFieldLeak")
-    private class HypixelAPIChecker extends AsyncTask<String, Void, String> {
-        private final Dialog dialog;
-        private final SharedPreferences sp;
-        private final IgnProvider ignProvider;
-        private final Activity activity;
-
-        private String usernameMessage;
-
-        HypixelAPIChecker(Activity activity) {
-            this.activity = activity;
-            this.sp = G.getSettings(activity);
-            this.ignProvider = G.getIgnProvider(activity);
-
-            this.dialog = new Dialog(activity);
-            this.dialog.setContentView(R.layout.loading_progress);
-            this.dialog.setCancelable(false);
-            this.dialog.setTitle(R.string.loading);
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String api = strings[0];
-            try {
-                if (api.isEmpty()) {
-                    return getString(R.string.hypixel_api_not_typed);
-                }
+		apiEditText = findViewById(R.id.set_api_txt);
+		findViewById(R.id.set_api_btn).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				new HypixelAPIChecker(SetApiActivity.this).execute(apiEditText.getText().toString());
+			}
+		});
+	}
 
 
-                String data = netRequest("https://api.hypixel.net/key?key=" + api);
-                if (data.isEmpty()) {
-                    return getString(R.string.the_server_did_not_response);
-                }
+	@SuppressLint("StaticFieldLeak")
+	private class HypixelAPIChecker extends AsyncTask<String, Void, String> {
+		private final Dialog dialog;
+		private final SharedPreferences sp;
+		private final IgnProvider ignProvider;
+		private final Activity activity;
 
-                JSONObject jsonObject = new JSONObject(data);
+		private String usernameMessage;
 
-                if (!jsonObject.getBoolean("success")) {
-                    return getString(R.string.invalid_api);
-                }
+		HypixelAPIChecker(Activity activity) {
+			this.activity = activity;
+			this.sp = G.getSettings(activity);
+			this.ignProvider = G.getIgnProvider(activity);
+
+			this.dialog = new Dialog(activity);
+			this.dialog.setContentView(R.layout.loading_progress);
+			this.dialog.setCancelable(false);
+			this.dialog.setTitle(R.string.loading);
+		}
+
+		@Override
+		protected String doInBackground(String... strings) {
+			String api = strings[0];
+			try {
+				if (api.isEmpty()) {
+					return getString(R.string.hypixel_api_not_typed);
+				}
 
 
-                SharedPreferences.Editor ed = sp.edit();
+				String data = netRequest("https://api.hypixel.net/key?key=" + api);
+				if (data.isEmpty()) {
+					return getString(R.string.the_server_did_not_response);
+				}
 
-                ed.putString(Settings.hypixelAPI.name(), api);
-                ed.commit();
-                isApiSet = true;
+				JSONObject jsonObject = new JSONObject(data);
 
-                String uuid = jsonObject.getJSONObject("record").getString("ownerUuid");
-                String username = this.ignProvider.getUsername(uuid, false);
+				if (!jsonObject.getBoolean("success")) {
+					return getString(R.string.invalid_api);
+				}
 
-                ed.putString(Settings.username.name(), username);
-                ed.putString(Settings.userUUID.name(), uuid);
-                ed.apply();
 
-                usernameMessage = username;
+				SharedPreferences.Editor ed = sp.edit();
 
-            } catch (Exception ignored) {
-                return getString(R.string.something_went_wrong);
-            }
+				ed.putString(Settings.hypixelAPI.name(), api);
+				ed.commit();
+				isApiSet = true;
 
-            return getString(R.string.api_has_been_added);
-        }
+				String uuid = jsonObject.getJSONObject("record").getString("ownerUuid");
+				String username = this.ignProvider.getUsername(uuid, false);
 
-        @Override
-        protected void onPreExecute() {
-            this.dialog.show();
-        }
+				ed.putString(Settings.username.name(), username);
+				ed.putString(Settings.userUUID.name(), uuid);
+				ed.apply();
 
-        @Override
-        protected void onPostExecute(String statusMessage) {
+				usernameMessage = username;
 
-            Toast.makeText(this.activity, statusMessage, Toast.LENGTH_LONG).show();
+			} catch (Exception ignored) {
+				return getString(R.string.something_went_wrong);
+			}
 
-            this.dialog.dismiss();
-            if (usernameMessage != null) showUsername(usernameMessage);
-        }
+			return getString(R.string.api_has_been_added);
+		}
 
-        private void showUsername(String username) {
-            AlertDialog.Builder msg = new AlertDialog.Builder(this.activity);
-            msg
-                    .setMessage(activity.getString(R.string.username_detected, username))
-                    .setCancelable(false)
-                    .setPositiveButton(activity.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    activity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (!isDestroyed) activity.onBackPressed();
-                                        }
-                                    });
-                                }
-                            }, 1000);
-                        }
-                    })
-                    .create().show();
-        }
+		@Override
+		protected void onPreExecute() {
+			this.dialog.show();
+		}
 
-        private String netRequest(String url) throws IOException {
+		@Override
+		protected void onPostExecute(String statusMessage) {
 
-            URL URL = new URL(url);
+			Toast.makeText(this.activity, statusMessage, Toast.LENGTH_LONG).show();
 
-            URLConnection urlConnection = URL.openConnection();
-            InputStream inputStream = urlConnection.getInputStream();
+			this.dialog.dismiss();
+			if (usernameMessage != null) showUsername(usernameMessage);
+		}
 
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) != -1) {
-                result.write(buffer, 0, length);
-            }
+		private void showUsername(String username) {
+			AlertDialog.Builder msg = new AlertDialog.Builder(this.activity);
+			msg
+					.setMessage(activity.getString(R.string.username_detected, username))
+					.setCancelable(false)
+					.setPositiveButton(activity.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							Handler handler = new Handler();
+							handler.postDelayed(new Runnable() {
+								@Override
+								public void run() {
+									activity.runOnUiThread(new Runnable() {
+										@Override
+										public void run() {
+											if (!isDestroyed) activity.onBackPressed();
+										}
+									});
+								}
+							}, 1000);
+						}
+					})
+					.create().show();
+		}
 
-            inputStream.close();
-            return result.toString("UTF-8");
-        }
-    }
+		private String netRequest(String url) throws IOException {
+
+			URL URL = new URL(url);
+
+			URLConnection urlConnection = URL.openConnection();
+			InputStream inputStream = urlConnection.getInputStream();
+
+			ByteArrayOutputStream result = new ByteArrayOutputStream();
+			byte[] buffer = new byte[1024];
+			int length;
+			while ((length = inputStream.read(buffer)) != -1) {
+				result.write(buffer, 0, length);
+			}
+
+			inputStream.close();
+			return result.toString("UTF-8");
+		}
+	}
 }

@@ -11,22 +11,22 @@ import org.acra.sender.ReportSenderFactory;
 
 class ReportService implements ReportSenderFactory {
 
-    @Override
-    public boolean enabled(@NonNull CoreConfiguration config) {
-        return true;
-    }
+	@Override
+	public boolean enabled(@NonNull CoreConfiguration config) {
+		return true;
+	}
 
-    @NonNull
-    @Override
-    public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
-        return new ReportSender_();
-    }
+	@NonNull
+	@Override
+	public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
+		return new ReportSender_();
+	}
 
-    class ReportSender_ implements ReportSender {
+	class ReportSender_ implements ReportSender {
 
-        @Override
-        public void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
+		@Override
+		public void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
 
-        }
-    }
+		}
+	}
 }

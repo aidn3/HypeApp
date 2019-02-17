@@ -6,10 +6,10 @@ import android.preference.PreferenceFragment;
 import com.aidn5.hypeapp.R;
 
 public class ACRASettingsFragment extends PreferenceFragment {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.pref_reporter);
-    }
+		addPreferencesFromResource(R.xml.pref_reporter);
+	}
 }

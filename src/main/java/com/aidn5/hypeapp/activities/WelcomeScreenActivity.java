@@ -7,22 +7,22 @@ import com.aidn5.hypeapp.R;
 
 public class WelcomeScreenActivity extends ActivityUI {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.welcome_screen);
+		setContentView(R.layout.welcome_screen);
 
-        showStartView();
-    }
+		showStartView();
+	}
 
-    private void showStartView() {
-        final View layout = findViewById(R.id.welcome_start_view);
-        findViewById(R.id.welcome_start_continue).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                layout.animate().translationY(layout.getHeight() + 100).setDuration(300).start();
-            }
-        });
-    }
+	private void showStartView() {
+		final View layout = findViewById(R.id.welcome_start_view);
+		findViewById(R.id.welcome_start_continue).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				layout.animate().translationY(layout.getHeight() + 100).setDuration(300).start();
+			}
+		});
+	}
 }

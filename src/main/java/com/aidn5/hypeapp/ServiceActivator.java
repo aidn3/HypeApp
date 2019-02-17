@@ -9,17 +9,17 @@ import android.widget.Toast;
  * Wake the service up
  */
 public class ServiceActivator extends BroadcastReceiver {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        if (isValidAction(intent.getAction())) {
-            Toast.makeText(context, "asd", Toast.LENGTH_LONG).show();
-            context.startService(new Intent(context, ServicesProvider.class));
-        }
-    }
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		if (isValidAction(intent.getAction())) {
+			Toast.makeText(context, "asd", Toast.LENGTH_LONG).show();
+			context.startService(new Intent(context, ServicesProvider.class));
+		}
+	}
 
-    private boolean isValidAction(String action) {
-        if (action == null || action.isEmpty()) return false;
+	private boolean isValidAction(String action) {
+		if (action == null || action.isEmpty()) return false;
 
-        return action.equals(Intent.ACTION_BOOT_COMPLETED);
-    }
+		return action.equals(Intent.ACTION_BOOT_COMPLETED);
+	}
 }

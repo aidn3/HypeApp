@@ -6,11 +6,11 @@ import android.preference.PreferenceFragment;
 import com.aidn5.hypeapp.R;
 
 public class NotifiersSettingsFragment extends PreferenceFragment {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.pref_notifications);
-        SettingsUIActivity.bindPreferenceSummaryToValue(findPreference("notifiersSyncEvery"));
-    }
+		addPreferencesFromResource(R.xml.pref_notifications);
+		SettingsUIActivity.bindPreferenceSummaryToValue(findPreference("notifiersSyncEvery"));
+	}
 }
