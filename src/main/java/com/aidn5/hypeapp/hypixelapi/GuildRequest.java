@@ -32,9 +32,9 @@ class GuildRequest extends AbstractedRequest {
 	public HypixelReplay getGuildMembersByMemberUUID(String api, String guidMemberUUID) {
 		initForNewRequest();
 
-		if (isValidUUID(api))
+		if (!isValidUUID(api))
 			return new HypixelReplay(new HypixelApiException(ExceptionTypes.NoHypixelApi), null);
-		if (isValidUUID(guidMemberUUID))
+		if (!isValidUUID(guidMemberUUID))
 			return new HypixelReplay(new HypixelApiException(ExceptionTypes.NoUserUUID), null);
 
 		String json;

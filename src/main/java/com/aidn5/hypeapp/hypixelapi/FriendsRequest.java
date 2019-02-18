@@ -20,9 +20,11 @@ public class FriendsRequest extends AbstractedRequest {
 	}
 
 	public HypixelReplay getFriendsByUserUUID(String api, String userUUID) {
-		if (isValidUUID(api))
+		initForNewRequest();
+
+		if (!isValidUUID(api))
 			return new HypixelReplay(new HypixelApiException(ExceptionTypes.NoHypixelApi), null);
-		if (isValidUUID(userUUID))
+		if (!isValidUUID(userUUID))
 			return new HypixelReplay(new HypixelApiException(ExceptionTypes.NoUserUUID), null);
 
 
