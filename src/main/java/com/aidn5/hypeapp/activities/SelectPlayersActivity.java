@@ -187,8 +187,8 @@ public class SelectPlayersActivity extends ActivityUI {
 				convertView = inflater.inflate(R.layout.select_players_list_item, null);
 
 				holder.dataHolder = convertView.findViewById(R.id.bflP_item_1);
-				holder.imageView = convertView.findViewById(R.id.SPL_item_image);
-				holder.text1 = convertView.findViewById(R.id.SPL_item_text1);
+				holder.imageView = convertView.findViewById(R.id.bflP_item_image);
+				holder.text1 = convertView.findViewById(R.id.bflP_item_text1);
 				holder.text2 = convertView.findViewById(R.id.bflP_item_text2);
 				holder.selected = convertView.findViewById(R.id.bflP_item_checkbox);
 
