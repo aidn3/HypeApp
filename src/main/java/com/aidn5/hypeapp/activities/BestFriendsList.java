@@ -113,7 +113,7 @@ public class BestFriendsList extends ActivityUI {
 				if (typeErrorMessage != null) errorDialog = typeErrorMessage;
 
 				stacktrace = hypixelReplay.exception.getMessage() +
-						"\r\n\r\n" + Log.getStackTraceString(hypixelReplay.exception.getCause()) +
+						"\r\n\r\n" + Log.getStackTraceString(hypixelReplay.exception) +
 						"\r\n\r\n" + hypixelReplay.fullResponse;
 				return errorDialog;
 			}
