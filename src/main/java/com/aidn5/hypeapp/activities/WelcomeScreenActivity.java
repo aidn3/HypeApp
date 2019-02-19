@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.aidn5.hypeapp.R;
 
-public class WelcomeScreenActivity extends ActivityUI {
+public class WelcomeScreenActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

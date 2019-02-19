@@ -17,12 +17,12 @@ import android.view.ViewGroup;
 
 import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.ServicesProvider;
-import com.aidn5.hypeapp.activities.ActivityUI;
+import com.aidn5.hypeapp.activities.BaseActivity;
 import com.aidn5.hypeapp.activities.settings.SettingsUIActivity;
 
 import static com.aidn5.hypeapp.R.id.container;
 
-public class MainActivity extends ActivityUI {
+public class MainActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

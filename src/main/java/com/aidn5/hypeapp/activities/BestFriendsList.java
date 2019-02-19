@@ -23,7 +23,7 @@ import com.aidn5.hypeapp.services.Settings;
 // PlayersLoader{}: Load friends and add username getter to the poolExecutor and then as callback run initialize()
 // initialize(): Set views and their settings and use playersSelectAdapter{}
 // playersSelectAdapter{}: create view to the list
-public class BestFriendsList extends ActivityUI {
+public class BestFriendsList extends BaseActivity {
 	private static final int SELECT_PLAYER_CODE = 1;
 	private SharedPreferences settings;
 	private String[] friends;

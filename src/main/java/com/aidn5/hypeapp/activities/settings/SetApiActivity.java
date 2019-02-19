@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import com.aidn5.hypeapp.G;
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.activities.ActivityUI;
+import com.aidn5.hypeapp.activities.BaseActivity;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
 
@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class SetApiActivity extends ActivityUI {
+public class SetApiActivity extends BaseActivity {
 	private EditText apiEditText;
 	private boolean isDestroyed = false;
 	private boolean isApiSet = false;

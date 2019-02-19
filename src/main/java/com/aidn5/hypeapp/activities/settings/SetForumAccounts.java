@@ -1,6 +1,6 @@
 package com.aidn5.hypeapp.activities.settings;
 
-import com.aidn5.hypeapp.activities.ActivityUI;
+import com.aidn5.hypeapp.activities.BaseActivity;
 
-public class SetForumAccounts extends ActivityUI {
+public class SetForumAccounts extends BaseActivity {
 }

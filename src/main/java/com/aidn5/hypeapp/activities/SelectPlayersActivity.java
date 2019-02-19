@@ -33,7 +33,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class SelectPlayersActivity extends ActivityUI {
+public class SelectPlayersActivity extends BaseActivity {
 	public static final String PLAYERS_UUIDs = "playersUuid";
 	public static final String SELECTED_PLAYERS = "selectedPlayers";
 	//// TODO: add feature Max Players to SelectPlayersActivity
