@@ -20,7 +20,7 @@ final class SyncViewer extends Timer {
 	private final ServicesProvider servicesProvider;
 
 	private final TextView nextSyncDateTX;
-	private final TextView syncErrorMessage;
+	//private final TextView syncErrorMessage;
 	private final View syncView;
 
 	SyncViewer(Activity activity, ServicesProvider servicesProvider) {
@@ -30,7 +30,7 @@ final class SyncViewer extends Timer {
 		this.servicesProvider = servicesProvider;
 
 		this.nextSyncDateTX = activity.findViewById(R.id.main_sync_time_date);
-		this.syncErrorMessage = activity.findViewById(R.id.main_sync_error_message);
+		//this.syncErrorMessage = activity.findViewById(R.id.main_sync_error_message);
 		this.syncView = activity.findViewById(R.id.main_sync_view);
 
 		this.syncView.setOnClickListener(new View.OnClickListener() {

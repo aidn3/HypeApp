@@ -104,13 +104,9 @@ abstract class Cacher {
 		return null;
 	}
 
-	protected final Context getContext() {
-		return context;
-	}
-
 	final class DataHolder {
-		final String data;
-		final long dataOld;
+		protected final String data;
+		protected final long dataOld;
 
 		private DataHolder(String data, long dataOld) {
 			this.data = data;
