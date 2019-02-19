@@ -1,4 +1,7 @@
 # HypeApp  
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/82d84a8989384d598b8ada5e8f45b8db)](https://app.codacy.com/app/aidn3/HypeApp?utm_source=github.com&utm_medium=referral&utm_content=aidn3/HypeApp&utm_campaign=Badge_Grade_Dashboard)
+
 App works on androids platform help people who has strong bonds with hypixel network to stay  
 **This project is still under development. Not all the fearures works**
   
