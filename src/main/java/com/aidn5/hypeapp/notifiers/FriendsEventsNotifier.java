@@ -17,7 +17,7 @@ import static com.aidn5.hypeapp.services.Settings.hypixelAPI;
 import static com.aidn5.hypeapp.services.Settings.userUUID;
 
 //todo: give a proper doc
-public class FriendsEventsNotifier extends NotifierFactory {
+public final class FriendsEventsNotifier extends NotifierFactory {
 	private static final String friendsUrl = "https://api.hypixel.net/friends?";
 
 	public FriendsEventsNotifier(ServicesProvider servicesProvider) {
@@ -25,7 +25,7 @@ public class FriendsEventsNotifier extends NotifierFactory {
 	}
 
 	@Override
-	public void doLoop() {
+	public final void doLoop() {
 		checkFriendRemoval();
 	}
 

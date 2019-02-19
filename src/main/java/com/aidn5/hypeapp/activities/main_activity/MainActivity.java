@@ -125,6 +125,8 @@ public class MainActivity extends BaseActivity {
 					return "Forums";
 				case 2:
 					return "Friends";
+				default:
+					// will NOT execute because of #getCount
 			}
 			return null;
 		}

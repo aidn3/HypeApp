@@ -30,6 +30,8 @@ public class BaseActivity extends AppCompatActivity {
 
 			@Override
 			public void onServiceDisconnected(ComponentName componentName) {
+				//No need to inform about disconnect
+				// since it will never happen and we only need one-way method #onServiceConnected_
 			}
 		};
 
@@ -38,5 +40,6 @@ public class BaseActivity extends AppCompatActivity {
 	}
 
 	protected void onServiceConnected_(ServicesProvider servicesProvider) {
+		//Override this to get the instance of the ServicesProvider
 	}
 }

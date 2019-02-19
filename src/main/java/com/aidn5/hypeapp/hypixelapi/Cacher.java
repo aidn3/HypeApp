@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 abstract class Cacher {
-	final Context context;
+	private final Context context;
 
 	/**
 	 * The path to the cache folder
@@ -19,7 +19,7 @@ abstract class Cacher {
 	 */
 	private final String cacheFolder;
 
-	Cacher(Context context) {
+	protected Cacher(Context context) {
 		this.context = context;
 		this.cacheFolder = context.getCacheDir().getAbsolutePath() + "/" + getClass().getSimpleName() + "/";
 	}
@@ -44,7 +44,7 @@ abstract class Cacher {
 	 * @param string the data to be saved
 	 * @return TRUE on success
 	 */
-	boolean saveCache(String key, String string) {
+	protected final boolean saveCache(String key, String string) {
 		if (!initSuccess(cacheFolder)) return false;
 
 		OutputStream out = null;
@@ -71,7 +71,7 @@ abstract class Cacher {
 	 * @return <b>{@link DataHolder}</b> if there is data. <b>NULL</b> when there is no data,
 	 * not isReady() or can not get the data
 	 */
-	DataHolder getCache(String key) {
+	protected final DataHolder getCache(String key) {
 		if (!initSuccess(cacheFolder)) return null;
 
 		FileInputStream fis = null;
@@ -104,7 +104,11 @@ abstract class Cacher {
 		return null;
 	}
 
-	class DataHolder {
+	protected final Context getContext() {
+		return context;
+	}
+
+	final class DataHolder {
 		final String data;
 		final long dataOld;
 

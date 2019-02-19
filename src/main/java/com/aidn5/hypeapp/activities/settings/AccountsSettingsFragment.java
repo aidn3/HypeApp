@@ -7,9 +7,9 @@ import android.preference.PreferenceFragment;
 import com.aidn5.hypeapp.R;
 
 public class AccountsSettingsFragment extends PreferenceFragment {
-	Preference usernameP;
-	Preference hypixelAPI;
-	Preference forumsAccountAddedP;
+	private Preference usernameP;
+	private Preference hypixelAPI;
+	private Preference forumsAccountAddedP;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

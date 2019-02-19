@@ -15,26 +15,26 @@ import java.net.URL;
 import java.net.URLConnection;
 
 abstract class AbstractedRequest extends Cacher {
-	static final String HYPIXEL_URL = "https://api.hypixel.net/";
+	protected static final String HYPIXEL_URL = "https://api.hypixel.net/";
 
-	long dataFromCache = -1;
+	protected long dataFromCache = -1;
 
-	AbstractedRequest(Context context) {
+	protected AbstractedRequest(Context context) {
 		super(context);
 		initForNewRequest();
 	}
 
-	void initForNewRequest() {
+	protected void initForNewRequest() {
 		dataFromCache = -1;
 	}
 
-	void saveCacheIfNeeded(String key, String data) {
+	protected void saveCacheIfNeeded(String key, String data) {
 		if (dataFromCache < 0) {
 			saveCache(key, data);
 		}
 	}
 
-	HypixelReplay checkForErrorsInResponse(JSONObject response, String fullResponse) {
+	protected HypixelReplay checkForErrorsInResponse(JSONObject response, String fullResponse) {
 		try {
 			if (response.optBoolean("throttle", false))
 				return new HypixelReplay(new HypixelApiException(ExceptionTypes.Throttle), fullResponse);
@@ -49,7 +49,7 @@ abstract class AbstractedRequest extends Cacher {
 		return null;
 	}
 
-	String getDataFromNet(String url) throws IOException {
+	protected String getDataFromNet(String url) throws IOException {
 		URL URL = new URL(url);
 
 		URLConnection urlConnection = URL.openConnection();
@@ -66,7 +66,7 @@ abstract class AbstractedRequest extends Cacher {
 		return result.toString("UTF-8");
 	}
 
-	boolean isValidUUID(String uuid) {
+	protected boolean isValidUUID(String uuid) {
 		return uuid != null && !uuid.isEmpty();
 	}
 }

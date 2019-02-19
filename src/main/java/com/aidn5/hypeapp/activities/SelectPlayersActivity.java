@@ -140,10 +140,12 @@ public class SelectPlayersActivity extends BaseActivity {
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				// We don't need this method. We only need #onTextChanged
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
+				// We don't need this method. We only need #onTextChanged
 			}
 		});
 	}
@@ -178,23 +180,24 @@ public class SelectPlayersActivity extends BaseActivity {
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
+			View finalView = convertView;
 			final ViewHolder holder;
 			final Player player = mDisplayedValues.get(position);
 
-			if (convertView == null) {
+			if (finalView == null) {
 				holder = new ViewHolder();
 
-				convertView = inflater.inflate(R.layout.select_players_list_item, null);
+				finalView = inflater.inflate(R.layout.select_players_list_item, null);
 
-				holder.dataHolder = convertView.findViewById(R.id.bflP_item_1);
-				holder.imageView = convertView.findViewById(R.id.bflP_item_image);
-				holder.text1 = convertView.findViewById(R.id.bflP_item_text1);
-				holder.text2 = convertView.findViewById(R.id.bflP_item_text2);
-				holder.selected = convertView.findViewById(R.id.bflP_item_checkbox);
+				holder.dataHolder = finalView.findViewById(R.id.bflP_item_1);
+				holder.imageView = finalView.findViewById(R.id.bflP_item_image);
+				holder.text1 = finalView.findViewById(R.id.bflP_item_text1);
+				holder.text2 = finalView.findViewById(R.id.bflP_item_text2);
+				holder.selected = finalView.findViewById(R.id.bflP_item_checkbox);
 
-				convertView.setTag(holder);
+				finalView.setTag(holder);
 			} else {
-				holder = (ViewHolder) convertView.getTag();
+				holder = (ViewHolder) finalView.getTag();
 			}
 
 			holder.dataHolder.setOnClickListener(new View.OnClickListener() {
@@ -226,7 +229,7 @@ public class SelectPlayersActivity extends BaseActivity {
 					.placeholder(R.drawable.default_player_head)
 					.into(holder.imageView);
 
-			return convertView;
+			return finalView;
 		}
 
 		@Override
@@ -278,11 +281,11 @@ public class SelectPlayersActivity extends BaseActivity {
 		}
 
 		private class ViewHolder {
-			CheckBox selected;
-			View dataHolder;
-			ImageView imageView;
-			TextView text1;
-			TextView text2;
+			private CheckBox selected;
+			private View dataHolder;
+			private ImageView imageView;
+			private TextView text1;
+			private TextView text2;
 		}
 	}
 

@@ -19,14 +19,14 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public abstract class NotifierFactory {
-	final Context context;
-	final IgnProvider ignProvider;
-	final NotificationFactory notificationFactory;
-	final DB db;
+	protected final Context context;
+	protected final IgnProvider ignProvider;
+	protected final NotificationFactory notificationFactory;
+	protected final DB db;
 
-	final SharedPreferences settings;
+	protected final SharedPreferences settings;
 
-	NotifierFactory(ServicesProvider servicesProvider) {
+	protected NotifierFactory(ServicesProvider servicesProvider) {
 		this.ignProvider = G.getIgnProvider(servicesProvider);
 		context = servicesProvider.getApplicationContext();
 		settings = servicesProvider.getSettings();
@@ -52,7 +52,7 @@ public abstract class NotifierFactory {
 		notificationFactory.showAll();
 	}
 
-	final String netRequest(String url) throws IOException {
+	protected final String netRequest(String url) throws IOException {
 
 		URL URL = new URL(url);
 
