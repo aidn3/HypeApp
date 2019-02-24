@@ -14,7 +14,7 @@ public final class Guild {
 	private final JSONObject jsonGuild;
 
 	public Guild(JSONObject json) {
-		this.jsonGuild = json.optJSONObject("guild");
+		this.jsonGuild = json;
 
 		this.guildId = this.jsonGuild.optString("_id");
 		this.guildName = this.jsonGuild.optString("name");
@@ -29,7 +29,7 @@ public final class Guild {
 	 */
 	public String[] getUUIDMembers() {
 		JSONArray jsonMembers = jsonGuild.optJSONArray("members");
-		String[] members = new String[jsonMembers.length() - 1];
+		String[] members = new String[jsonMembers.length()];
 
 		for (int i = 0; i < jsonMembers.length(); i++) {
 			JSONObject jsonMember = jsonMembers.optJSONObject(i);

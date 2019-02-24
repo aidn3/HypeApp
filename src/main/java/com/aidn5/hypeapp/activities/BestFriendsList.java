@@ -15,7 +15,6 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.UIManager;
 import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
-import com.aidn5.hypeapp.services.Settings;
 
 //The code is executed in this way
 // onCreate(): bind to the background service
@@ -31,7 +30,7 @@ public class BestFriendsList extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		settings = G.getSettings(this);
+		settings = ((G) getApplication()).getSettings();
 
 		new PlayersLoader(this).execute();
 	}
@@ -101,10 +100,7 @@ public class BestFriendsList extends BaseActivity {
 
 		@Override
 		protected String doInBackground(Void... voids) {
-			String api = settings.getString(Settings.hypixelAPI.name(), null);
-			final String userUUID = settings.getString(Settings.userUUID.name(), null);
-
-			HypixelReplay hypixelReplay = new FriendsRequest(activity).getFriendsByUserUUID(api, userUUID);
+			HypixelReplay hypixelReplay = new FriendsRequest(activity).getFriendsByUserUUID(settings);
 			if (!hypixelReplay.isSuccess) {
 				hypixelReplay.exception.getMessage();
 				errorDialog = hypixelReplay.exception.getMessage();

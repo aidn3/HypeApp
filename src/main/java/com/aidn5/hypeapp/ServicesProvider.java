@@ -12,28 +12,30 @@ import android.util.Log;
 
 import com.aidn5.hypeapp.notifiers.AppEventsNotifier;
 import com.aidn5.hypeapp.notifiers.ForumsEventsNotifier;
-import com.aidn5.hypeapp.notifiers.FriendsEventsNotifier;
 import com.aidn5.hypeapp.notifiers.GuildEventsNotifier;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.notifiers.friends.FriendIgnChangeEvent;
+import com.aidn5.hypeapp.notifiers.friends.FriendRemovalEvent;
 import com.aidn5.hypeapp.services.Settings;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 public final class ServicesProvider extends Service {
 	public final SyncProvider syncProvider = new SyncProvider();
-	private final HashMap<Class, NotifierFactory> notifiers = new HashMap<>();
+	private final List<NotifierFactory> notifiers = new ArrayList<>();
 	private final IBinder binder = new LocalBinder();
 	private final BroadcastReceiverScreenOn broadcastReceiverScreenOn = new BroadcastReceiverScreenOn();
+
+	private G g;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
+		g = (G) getApplication();
 		//Create services and needed objects
 		createNotifiers();
 		syncProvider.start();
@@ -48,14 +50,18 @@ public final class ServicesProvider extends Service {
 	}
 
 	public SharedPreferences getSettings() {
-		return G.getSettings(this);
+		return ((G) getApplication()).getSettings();
 	}
 
 	private void createNotifiers() {
-		notifiers.put(AppEventsNotifier.class, new AppEventsNotifier(this));
-		notifiers.put(ForumsEventsNotifier.class, new ForumsEventsNotifier(this));
-		notifiers.put(FriendsEventsNotifier.class, new FriendsEventsNotifier(this));
-		notifiers.put(GuildEventsNotifier.class, new GuildEventsNotifier(this));
+		notifiers.add(new AppEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+
+		notifiers.add(new ForumsEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+
+		notifiers.add(new FriendRemovalEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+		notifiers.add(new FriendIgnChangeEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+
+		notifiers.add(new GuildEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
 	}
 
 	@Override
@@ -81,8 +87,8 @@ public final class ServicesProvider extends Service {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			for (Map.Entry<Class, NotifierFactory> notifierFactory : notifiers.entrySet()) {
-				notifierFactory.getValue().showNotifications();//its already synchronized
+			for (NotifierFactory notifierFactory : notifiers) {
+				notifierFactory.showNotifications();//its already synchronized
 			}
 		}
 	}
@@ -101,7 +107,7 @@ public final class ServicesProvider extends Service {
 					} catch (Exception e) {
 						// This is background process
 						// We don't need to annoy the user
-						//TODO: add notification on error occurs
+						//TODO: [Feature] add notification on error occurs
 						e.printStackTrace();
 					}
 				}
@@ -113,11 +119,12 @@ public final class ServicesProvider extends Service {
 
 			Log.v(this.getClass().getSimpleName(), "syncing...");
 
-
-			for (Map.Entry<Class, NotifierFactory> notifierFactory : notifiers.entrySet()) {
+			for (NotifierFactory notifierFactory : notifiers) {
 				try {//We don't need to let services interfere with each other
-					//notifierFactory.getValue().doLoop();
-				} catch (Exception ignored) {
+					notifierFactory.doLoop();
+					Log.v("Sync", notifierFactory.getClass().getSimpleName());
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -126,6 +133,14 @@ public final class ServicesProvider extends Service {
 					.commit();
 
 			Log.v(this.getClass().getSimpleName(), "Done syncing");
+
+			// After syncing, if the user didn't opt
+			// to receive the notifications directly after it come, then just show it :)
+			if (!getSettings().getBoolean(Settings.showNotificationsOnlyNotAFK.name(), true)) {
+				for (NotifierFactory notifierFactory : notifiers) {
+					notifierFactory.showNotifications();
+				}
+			}
 		}
 
 		/**

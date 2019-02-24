@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 abstract class Cacher {
-	private final Context context;
-
 	/**
 	 * The path to the cache folder
 	 * <p>
@@ -20,7 +18,6 @@ abstract class Cacher {
 	private final String cacheFolder;
 
 	protected Cacher(Context context) {
-		this.context = context;
 		this.cacheFolder = context.getCacheDir().getAbsolutePath() + "/" + getClass().getSimpleName() + "/";
 	}
 

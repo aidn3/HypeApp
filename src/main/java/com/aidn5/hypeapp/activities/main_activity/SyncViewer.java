@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +35,6 @@ final class SyncViewer extends Timer {
 		this.syncView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.v("MEEE", "Tap Sync");
 				new SynceDialog().execute();
 			}
 		});
@@ -52,9 +50,7 @@ final class SyncViewer extends Timer {
 					activity.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							Log.v("MEEE", "sync refresh: start");
 							setStatus();
-							Log.v("MEEE", "sync refresh: end");
 						}
 					});
 				} catch (Exception ignored) {

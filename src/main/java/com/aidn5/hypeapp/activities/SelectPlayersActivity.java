@@ -58,8 +58,7 @@ public class SelectPlayersActivity extends BaseActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		ignProvider = G.getIgnProvider(this);
+		ignProvider = ((G) getApplication()).getIgnProvider();
 
 		Intent intent = getIntent();
 
@@ -115,6 +114,12 @@ public class SelectPlayersActivity extends BaseActivity {
 			}
 		});
 		builder.create().show();
+	}
+
+	@Override
+	protected void onDestroy() {
+		imageLoader.shutdown();
+		super.onDestroy();
 	}
 
 	//execute when when playerList is initialized

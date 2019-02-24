@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,8 +17,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * Service provides a lookup-er to usernames and UUIDs for minecraft.
+ * <p>
+ * It uses http://api.mojang.com to look for the usernames and UUIDs up
+ * and cache them by {@link SQLiteDatabase} for later uses
+ */
 @SuppressWarnings("unused")
-public class IgnProvider {
+public final class IgnProvider {
 	private static final String QUERY_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS 'data' ('uuid' TEXT PRIMARY KEY, 'hypixelAPI' TEXT, modifyTime INTEGER);";
 	private static final String QUERY_DROP_TABLE = "DROP TABLE IF EXISTS data;";
 	private static final String QUERY_PUT = "INSERT OR REPLACE INTO 'data' (uuid, hypixelAPI, modifyTime) VALUES (?, ?, ?);";
@@ -40,7 +48,8 @@ public class IgnProvider {
 		this.PREPARED_PUT = this.db.compileStatement(QUERY_PUT);
 	}
 
-	public String getUsername(String uuid, boolean ignoreCache) {
+	@Nullable
+	public String getUsername(@NonNull String uuid, boolean ignoreCache) {
 		String username;
 
 		if (!ignoreCache) {
@@ -54,7 +63,8 @@ public class IgnProvider {
 		return username;
 	}
 
-	public String getUUID(String username, boolean ignoreCache) {
+	@Nullable
+	public String getUUID(@NonNull String username, boolean ignoreCache) {
 		String uuid;
 
 		if (!ignoreCache) {
@@ -68,7 +78,8 @@ public class IgnProvider {
 		return uuid;
 	}
 
-	private String getUUIDFromNet(String username) {
+	@Nullable
+	private String getUUIDFromNet(@NonNull String username) {
 		try {
 			String uuid = getString("https://api.mojang.com/users/profiles/minecraft/" + username);
 			JSONObject jsonObject = new JSONObject(uuid);
@@ -78,7 +89,8 @@ public class IgnProvider {
 		return null;
 	}
 
-	private String getUsernameFromNet(String UUID) {
+	@Nullable
+	private String getUsernameFromNet(@NonNull String UUID) {
 		try {
 			String dataJson = getString("https://api.mojang.com/user/profiles/" + UUID + "/names");
 
@@ -90,7 +102,8 @@ public class IgnProvider {
 		return null;
 	}
 
-	private synchronized String getUsernameFromDB(String uuid) {
+	@Nullable
+	private synchronized String getUsernameFromDB(@NonNull String uuid) {
 		Cursor cursor = this.db.rawQuery(
 				"SELECT hypixelAPI from data where uuid = ? AND modifyTime > ?;",
 				new String[]{uuid, (System.currentTimeMillis() - TimeController) + ""}
@@ -107,7 +120,8 @@ public class IgnProvider {
 		return username;
 	}
 
-	private synchronized String getUUIDFromDB(String username) {
+	@Nullable
+	private synchronized String getUUIDFromDB(@NonNull String username) {
 		Cursor cursor = this.db.rawQuery(
 				"SELECT uuid from data where hypixelAPI = ? AND modifyTime > ?;",
 				new String[]{username, (System.currentTimeMillis() - TimeController) + ""}
@@ -125,7 +139,7 @@ public class IgnProvider {
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
-	private synchronized long putUserIntoDB(String uuid, String username) {
+	private synchronized long putUserIntoDB(@NonNull String uuid, @NonNull String username) {
 		PREPARED_PUT.clearBindings();
 
 		PREPARED_PUT.bindString(1, uuid);
@@ -134,11 +148,16 @@ public class IgnProvider {
 		return PREPARED_PUT.executeInsert();
 	}
 
+	/**
+	 * clean the database from old outdated data
+	 */
 	public synchronized void cleanDB() {
 		this.db.execSQL("DELETE FROM data WHERE modifyTime < " + (System.currentTimeMillis() - TimeController));
 	}
 
-
+	/**
+	 * delete all the cached data
+	 */
 	public synchronized void clearDB() {
 		this.db.beginTransaction();
 
@@ -148,7 +167,15 @@ public class IgnProvider {
 		this.db.setTransactionSuccessful();
 	}
 
-	private String getString(String url) throws IOException {
+	/**
+	 * Open stream to the associated url, fetch the data and return it as {@link String}
+	 *
+	 * @param url the requested url
+	 * @return the fetched data from the url
+	 * @throws IOException if an I/O exception occurs.
+	 */
+	@NonNull
+	private String getString(@NonNull String url) throws IOException {
 
 		URL URL = new URL(url);
 
@@ -166,4 +193,9 @@ public class IgnProvider {
 		return result.toString("UTF-8");
 	}
 
+	public class DataHolder {
+		public String username;
+		public String uuid;
+		public boolean isUpToDate;
+	}
 }

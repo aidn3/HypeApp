@@ -11,22 +11,21 @@ import com.aidn5.hypeapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"deprecation", "WeakerAccess", "unused", "DanglingJavadoc"})
-//Everything is safe. OLD android version MUST use OLD deprecated methods
-
 /**
  * This class manage notificationsFactories.
- *
+ * <p>
  * It create the notificationsFactories and save them for a trigger to fire them.
  * The trigger will get triggered when the user turn on the screen.
  * It's a way to not annoy the user with notificationsFactories while away from the phone
- *
+ * <p>
  * Besides it create a notification body.
  * So, all the notification have one design.
- *
+ * <p>
  * AND to make the migration to later android versions easier.
  * Newer method are deprecated in later. This class will work around this issue too
  */
+@SuppressWarnings({"deprecation", "WeakerAccess", "unused"})
+//Everything is safe. OLD android version MUST use OLD deprecated methods
 public class NotificationFactory {
 	private final String channelId;
 
@@ -49,12 +48,19 @@ public class NotificationFactory {
 		}
 	}
 
-	public final void showAll() {
+	/**
+	 * Show all the pending notifications to the user
+	 *
+	 * @return the number of the notifications, which has been sent
+	 */
+	public final long showAll() {
 		synchronized (this.notifications) {
+			long n = notifications.size();
 			for (Notification notification : notifications) {
 				showNotify(notification);
 			}
 			notifications.clear();
+			return n;
 		}
 	}
 

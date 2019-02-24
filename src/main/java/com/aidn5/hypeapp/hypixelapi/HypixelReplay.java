@@ -21,7 +21,7 @@ public final class HypixelReplay {
 		dataOld = -1;
 	}
 
-	HypixelReplay(Object value, String fullResponse, long dataOld) {
+	public HypixelReplay(Object value, String fullResponse, long dataOld) {
 		this.value = value;
 		this.fullResponse = fullResponse;
 

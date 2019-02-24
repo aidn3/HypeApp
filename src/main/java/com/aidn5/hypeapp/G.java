@@ -7,7 +7,11 @@ import android.preference.PreferenceManager;
 
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.evernote.android.job.JobRequest;
+import com.snappydb.DB;
+import com.snappydb.DBFactory;
+import com.snappydb.SnappydbException;
 
+import org.acra.ACRA;
 import org.acra.annotation.AcraCore;
 import org.acra.annotation.AcraLimiter;
 import org.acra.annotation.AcraNotification;
@@ -18,62 +22,31 @@ import org.acra.annotation.AcraScheduler;
 @AcraLimiter()
 @AcraNotification(resTitle = R.string.unhandled_exception, resText = R.string.unhandled_exception_message, resChannelName = R.string.app_notification_channel)
 public class G extends Application {
-	private static IgnProvider ignProvider;
-	private static SharedPreferences settings;
+	private IgnProvider ignProvider;
+	private SharedPreferences settings;
+	private DB db = null;
 
-	public static IgnProvider getIgnProvider(Context context) {
-		return ignProvider != null ? ignProvider : (ignProvider = new IgnProvider(context));
+	public final IgnProvider getIgnProvider() {
+		return ignProvider != null ? ignProvider : (ignProvider = new IgnProvider(getApplicationContext()));
 	}
 
-	public static SharedPreferences getSettings(Context context) {
-		return settings != null ? settings : (settings = PreferenceManager.getDefaultSharedPreferences(context));
+	public final SharedPreferences getSettings() {
+		return settings != null ? settings : (settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
 	}
 
-    /*@Override
-    public void onCreate() {
-        super.onCreate();
-        final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                defaultUncaughtExceptionHandler.uncaughtException(t, e);
-            }
-        });
-    }*/
+	public final DB getDB() {
+		try {
+			return db != null ? db : (db = DBFactory.open(getApplicationContext()));
+		} catch (SnappydbException e) {
+			e.printStackTrace();
+			return db;
+		}
+	}
 
 	@Override
 	protected void attachBaseContext(Context context) {
 		super.attachBaseContext(context);
 
-		//setACRA();
+		ACRA.init(this);
 	}
-
-    /*private void setACRA() {
-        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);
-
-        //noinspection unchecked
-        builder
-                .setEnabled(true)
-                .setBuildConfigClass(BuildConfig.class)
-                .setReportFormat(StringFormat.JSON)
-                .setReportSenderFactoryClasses(ReportService.class);
-
-        builder.getPluginConfigurationBuilder(LimiterConfigurationBuilder.class)
-                .setEnabled(true);
-
-        builder.getPluginConfigurationBuilder(SchedulerConfigurationBuilder.class)
-                .setEnabled(true)
-                .setRequiresNetworkType(JobRequest.NetworkType.UNMETERED)
-                .setRequiresBatteryNotLow(true);
-
-        builder.getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
-                .setEnabled(true)
-                .setResTitle(R.string.unhandled_exception)
-                .setResText(R.string.unhandled_exception_message);
-
-
-        ACRA.DEV_LOGGING = true;
-        ACRA.init(this, builder);
-        //ACRA.init(this);
-    }*/
 }

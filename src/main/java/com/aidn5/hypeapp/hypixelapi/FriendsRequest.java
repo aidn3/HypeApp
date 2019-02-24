@@ -1,9 +1,12 @@
 package com.aidn5.hypeapp.hypixelapi;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.aidn5.hypeapp.hypixelapi.exception.ExceptionTypes;
 import com.aidn5.hypeapp.hypixelapi.exception.HypixelApiException;
+import com.aidn5.hypeapp.services.Settings;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,14 +14,23 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class FriendsRequest extends AbstractedRequest {
+public final class FriendsRequest extends AbstractedRequest {
 	private static final String REQUEST_FRIENDS = HYPIXEL_URL + "friends?";
 	private static final String CACHE_FRIENDS = "friends";
 
-	public FriendsRequest(Context context) {
+	public FriendsRequest(@NonNull Context context) {
 		super(context);
 	}
 
+	@NonNull
+	public HypixelReplay getFriendsByUserUUID(@NonNull SharedPreferences preferences) {
+		String api = preferences.getString(Settings.hypixelAPI.name(), null);
+		String userUUID = preferences.getString(Settings.userUUID.name(), null);
+
+		return getFriendsByUserUUID(api, userUUID);
+	}
+
+	@NonNull
 	public HypixelReplay getFriendsByUserUUID(String api, String userUUID) {
 		initForNewRequest();
 

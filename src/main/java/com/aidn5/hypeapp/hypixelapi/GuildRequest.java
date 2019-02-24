@@ -1,17 +1,20 @@
 package com.aidn5.hypeapp.hypixelapi;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.aidn5.hypeapp.hypixelapi.exception.ExceptionTypes;
 import com.aidn5.hypeapp.hypixelapi.exception.HypixelApiException;
 import com.aidn5.hypeapp.hypixelapi.models.Guild;
+import com.aidn5.hypeapp.services.Settings;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
-class GuildRequest extends AbstractedRequest {
+public final class GuildRequest extends AbstractedRequest {
 	private static final String REQUEST_GET_GUILD = HYPIXEL_URL + "guild?";
 	private static final String REQUEST_FIND_GUILD = HYPIXEL_URL + "findGuild?";
 
@@ -25,10 +28,25 @@ class GuildRequest extends AbstractedRequest {
 	/**
 	 * Get {@link Guild} of the user
 	 *
+	 * @see #getGuildMembersByMemberUUID(String, String)
+	 */
+	@NonNull
+	public HypixelReplay getGuildMembersByMemberUUID(@NonNull SharedPreferences preferences) {
+		String api = preferences.getString(Settings.hypixelAPI.name(), null);
+		String userUUID = preferences.getString(Settings.userUUID.name(), null);
+
+		return getGuildMembersByMemberUUID(api, userUUID);
+	}
+
+	/**
+	 * Get {@link Guild} of the user
+	 *
 	 * @param api            the key to authorize with the server
 	 * @param guidMemberUUID a Member's UUID of the Guild
-	 * @return HypixelReplay with the {@link HypixelReplay#value} of {@link Guild}
+	 * @return {@link HypixelReplay} with the {@link HypixelReplay#value} of {@link Guild} if in guild
+	 * otherwise {@link HypixelReplay#value} is NULL
 	 */
+	@NonNull
 	public HypixelReplay getGuildMembersByMemberUUID(String api, String guidMemberUUID) {
 		initForNewRequest();
 
@@ -52,7 +70,6 @@ class GuildRequest extends AbstractedRequest {
 			json = cacher.data;
 		}
 
-
 		try {
 			JSONObject jsonObject = new JSONObject(json);
 
@@ -61,7 +78,12 @@ class GuildRequest extends AbstractedRequest {
 
 			saveCacheIfNeeded(CACHE_GET_GUILD, json);
 
-			return new HypixelReplay(new Guild(jsonObject), json, dataFromCache);
+			JSONObject guildJSON = jsonObject.optJSONObject("guild");
+
+			if (guildJSON == null)
+				return new HypixelReplay(null, json, dataFromCache); // no guild found
+			return new HypixelReplay(new Guild(guildJSON), json, dataFromCache);
+
 		} catch (JSONException e) {
 			return new HypixelReplay(new HypixelApiException(ExceptionTypes.Parse, e), json);
 		}
@@ -74,7 +96,8 @@ class GuildRequest extends AbstractedRequest {
 	 * @param memberUuid a Member's UUID of the Guild
 	 * @return HypixelReplay with the {@link HypixelReplay#value} of {@link String}
 	 */
-	private HypixelReplay findGuildIdByMemberUuid(String api, String memberUuid) {
+	@NonNull
+	private HypixelReplay findGuildIdByMemberUuid(@NonNull String api, @NonNull String memberUuid) {
 		String json;
 
 		try {

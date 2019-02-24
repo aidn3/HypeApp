@@ -72,9 +72,11 @@ public class SetApiActivity extends BaseActivity {
 		private String usernameMessage;
 
 		HypixelAPIChecker(Activity activity) {
+			G g = (G) activity.getApplication();
+
 			this.activity = activity;
-			this.sp = G.getSettings(activity);
-			this.ignProvider = G.getIgnProvider(activity);
+			this.sp = g.getSettings();
+			this.ignProvider = g.getIgnProvider();
 
 			this.dialog = new Dialog(activity);
 			this.dialog.setContentView(R.layout.loading_progress);
