@@ -10,7 +10,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.aidn5.hypeapp.notifiers.AppEventsNotifier;
+import com.aidn5.hypeapp.notifiers.app.AppAnnouncementsEvent;
 import com.aidn5.hypeapp.notifiers.ForumsEventsNotifier;
 import com.aidn5.hypeapp.notifiers.GuildEventsNotifier;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
@@ -54,7 +54,7 @@ public final class ServicesProvider extends Service {
 	}
 
 	private void createNotifiers() {
-		notifiers.add(new AppEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+		notifiers.add(new AppAnnouncementsEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
 
 		notifiers.add(new ForumsEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
 
