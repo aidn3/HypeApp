@@ -10,10 +10,10 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.aidn5.hypeapp.notifiers.app.AppAnnouncementsEvent;
 import com.aidn5.hypeapp.notifiers.ForumsEventsNotifier;
 import com.aidn5.hypeapp.notifiers.GuildEventsNotifier;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.notifiers.app.AppAnnouncementsEvent;
 import com.aidn5.hypeapp.notifiers.friends.FriendIgnChangeEvent;
 import com.aidn5.hypeapp.notifiers.friends.FriendRemovalEvent;
 import com.aidn5.hypeapp.services.Settings;
@@ -134,9 +134,10 @@ public final class ServicesProvider extends Service {
 
 			Log.v(this.getClass().getSimpleName(), "Done syncing");
 
-			// After syncing, if the user didn't opt
-			// to receive the notifications directly after it come, then just show it :)
-			if (!getSettings().getBoolean(Settings.showNotificationsOnlyNotAFK.name(), true)) {
+			// After syncing, if the user did opt
+			// to receive the notifications directly after it come
+			// or did sync manually (forceSync) then just show it :)
+			if (forceSync || !getSettings().getBoolean(Settings.showNotificationsOnlyNotAFK.name(), true)) {
 				for (NotifierFactory notifierFactory : notifiers) {
 					notifierFactory.showNotifications();
 				}
