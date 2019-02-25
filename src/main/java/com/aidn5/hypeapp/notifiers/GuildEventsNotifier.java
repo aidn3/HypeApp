@@ -9,7 +9,6 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.hypixelapi.GuildRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.hypixelapi.models.Guild;
-import com.aidn5.hypeapp.notifiers.friends.FriendRemovalEvent;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
 import com.snappydb.DB;
@@ -19,8 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class GuildEventsNotifier extends NotifierFactory {
-	private static final String SETTINGS_IS_IN_GUILD = FriendRemovalEvent.class.getSimpleName() + "_IsInGuild";
-	private static final String SETTINGS_GUILD_MEMBERS = FriendRemovalEvent.class.getSimpleName() + "_GuildMembers";
+	private static final String SETTINGS_IS_IN_GUILD = GuildEventsNotifier.class.getSimpleName() + "_IsInGuild";
+	private static final String SETTINGS_GUILD_MEMBERS = GuildEventsNotifier.class.getSimpleName() + "_GuildMembers";
 
 	public GuildEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
 		super(context, db, ignProvider, settings);
