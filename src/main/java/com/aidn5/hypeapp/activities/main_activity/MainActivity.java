@@ -7,9 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.ServicesProvider;
@@ -28,15 +28,6 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main2);
 
-		SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.main_swiperefresh);
-		swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				swipeRefreshLayout.setRefreshing(false);
-			}
-		});
-
-
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -47,6 +38,12 @@ public class MainActivity extends BaseActivity {
 
 		TabLayout tabLayout = findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(mViewPager);
+
+		// Make the first tab in the tabs smaller (width)
+		LinearLayout layout = ((LinearLayout) ((LinearLayout) tabLayout.getChildAt(0)).getChildAt(0));
+		LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) layout.getLayoutParams();
+		layoutParams.weight = 0.3f;
+		layout.setLayoutParams(layoutParams);
 
 		bindToLocalService();
 	}
@@ -73,7 +70,6 @@ public class MainActivity extends BaseActivity {
 		return false;
 	}
 
-
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.
@@ -85,13 +81,14 @@ public class MainActivity extends BaseActivity {
 			super(fm);
 
 			// add Instances of the pages
+			fragments.add(new EventsFragment());
 			fragments.add(new GuildFragment());
 			fragments.add(new FriendsFragment());
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			return (Fragment) fragments.get(position);
+			return fragments.get(position);
 		}
 
 		@Override

@@ -1,9 +1,6 @@
 package com.aidn5.hypeapp.activities.main_activity;
 
-
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -14,36 +11,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.hypixelapi.GuildRequest;
-import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
-import com.aidn5.hypeapp.hypixelapi.models.Guild;
-import com.aidn5.hypeapp.hypixelapi.models.GuildMember;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.squareup.picasso.Picasso;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class GuildFragment extends BaseFragment {
-	private static final byte NO_GUILD_FOUND = 5;
-
+public class EventsFragment extends BaseFragment {
 	@Override
-	public CharSequence getTitle(@NonNull Context context) {
-		return context.getText(R.string.guild);
+	protected CharSequence getTitle(@NonNull Context context) {
+		return context.getString(R.string.eventsTitle);
 	}
 
 	@Override
-	protected View onCustomEvent(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
-		// todo: [feature] GuildFragment: add indicator no guild found
-		return null;
-	}
-
-	@Override
-	public synchronized void refresh() {
+	protected void refresh() {
 		setState(LOADING); // show the loading indicator
 
 		Context context = getContext();
@@ -52,52 +35,40 @@ public class GuildFragment extends BaseFragment {
 			return;
 		}
 
-		// Load data
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		HypixelReplay friendsRequest = new GuildRequest(context).getGuildMembersByMemberUUID(settings);
+		//EventsSaver eventsSaver = new EventsSaver(context);
 
-		// Check on errors
-		if (!friendsRequest.isSuccess) {
-			setState(FAILED);
-			return;
-		}
-
-		Guild guild = (Guild) friendsRequest.value;
-		if (guild == null) {
-			setState(NO_GUILD_FOUND);
-			return;
-		}
-
-		// Create the adapter and set it
-		this.adapter = new Adapter(
-				getLayoutInflater(), context, new IgnProvider(context),
-				guild.getDetailedGuildMembers());
-
-		setState(LOADED); //Send signal to use and display the adapter
 	}
 
+	@Override
+	protected boolean autoLoad(@Nullable Context context) {
+		return true;
+	}
+
+	//todo: [feature] FriendsFragment: load the data of best-friends
 	private final class Adapter extends BaseAdapter {
 		private final BlockingQueue<Runnable> executesQueue = new ArrayBlockingQueue<>(15000);
 		private final ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(10, 15, 10, TimeUnit.SECONDS, executesQueue);
 		private final Picasso imageLoader;
 
 		private final LayoutInflater inflater;
-		private final List<GuildMember> guildMembers;
+		private final Player[] players;
 
-		Adapter(LayoutInflater inflater, Context context, IgnProvider ignProvider, List<GuildMember> guildMembers) {
+		Adapter(LayoutInflater inflater, Context context, IgnProvider ignProvider, String[] uuids) {
 			this.inflater = inflater;
 			this.imageLoader = new Picasso.Builder(context).build();
-			this.guildMembers = guildMembers;
+			this.players = new Player[uuids.length];
 
-			Collections.sort(guildMembers); // Sort from guild master to officer to ... to member...
+			for (int i = 0; i < uuids.length; i++) {
 
-			for (GuildMember guildMember : guildMembers) {
+				Player player = (players[i] = new Player());
+				player.uuid = uuids[i];
+
 				poolExecutor.execute(new Runnable() {
 					@Override
 					public void run() {
 						//IgnProvider will either returns null or the result
 						//the username is NULL anyways. So, don't check the value
-						guildMember.username = ignProvider.getUsername(guildMember.uuid, false);
+						player.username = ignProvider.getUsername(player.uuid, false);
 					}
 				});
 			}
@@ -105,7 +76,7 @@ public class GuildFragment extends BaseFragment {
 
 		@Override
 		public int getCount() {
-			return this.guildMembers.size();
+			return this.players.length;
 		}
 
 		@Override
@@ -121,7 +92,7 @@ public class GuildFragment extends BaseFragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			final Holder holder;
-			GuildMember guildMember = this.guildMembers.get(position);
+			Player player = this.players[position];
 
 			if (convertView == null) {
 				holder = new Holder();
@@ -136,15 +107,10 @@ public class GuildFragment extends BaseFragment {
 				holder = (Holder) convertView.getTag();
 			}
 
-			//todo: [feature] GuildFragment: Add color to tag/ranks of guildMembers
-			holder.text1.setText(
-					String.format(
-							"[%s] %s",
-							guildMember.rank,
-							(guildMember.username != null) ? guildMember.username : guildMember.uuid));
+			holder.text1.setText((player.username != null) ? player.username : player.uuid);
 
 			this.imageLoader
-					.load("https://crafatar.com/avatars/" + guildMember.uuid + "?overlay&default=MHF_Alex")
+					.load("https://crafatar.com/avatars/" + player.uuid + "?overlay&default=MHF_Alex")
 					.placeholder(R.drawable.default_player_head)
 					.into(holder.head);
 
@@ -155,6 +121,14 @@ public class GuildFragment extends BaseFragment {
 			ImageView head;
 			TextView text1;
 			TextView text2;
+		}
+
+		private final class Player {
+			String uuid;
+			String username;
+
+			//String doing;
+			//boolean isCached;
 		}
 	}
 }

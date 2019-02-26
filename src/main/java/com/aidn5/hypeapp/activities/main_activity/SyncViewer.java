@@ -35,7 +35,7 @@ final class SyncViewer extends Timer {
 		this.syncView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new SynceDialog().execute();
+				new SyncDialog().execute();
 			}
 		});
 
@@ -84,10 +84,10 @@ final class SyncViewer extends Timer {
 	}
 
 	@SuppressLint("StaticFieldLeak")
-	private final class SynceDialog extends AsyncTask<Void, Void, String> {
+	private final class SyncDialog extends AsyncTask<Void, Void, String> {
 		private final Dialog dialog;
 
-		private SynceDialog() {
+		private SyncDialog() {
 			this.dialog = new Dialog(activity);
 			this.dialog.setContentView(R.layout.loading_progress);
 			this.dialog.setCancelable(true);
