@@ -9,6 +9,7 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.hypixelapi.GuildRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.hypixelapi.models.Guild;
+import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
 import com.snappydb.DB;
@@ -21,8 +22,8 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	private static final String SETTINGS_IS_IN_GUILD = GuildEventsNotifier.class.getSimpleName() + "_IsInGuild";
 	private static final String SETTINGS_GUILD_MEMBERS = GuildEventsNotifier.class.getSimpleName() + "_GuildMembers";
 
-	public GuildEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public GuildEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
+		super(context, db, ignProvider, settings, eventsSaver);
 	}
 
 	/**
@@ -63,6 +64,11 @@ public final class GuildEventsNotifier extends NotifierFactory {
 		cacheGuildMembers(members);
 	}
 
+	@Override
+	public int getName() {
+		return R.string.guildsEvents;
+	}
+
 	/**
 	 * Check whether the user has been kicked from the guild or not.
 	 * If it they have been kicked and enabled guildSelfLeaves option
@@ -81,6 +87,14 @@ public final class GuildEventsNotifier extends NotifierFactory {
 							context.getString(R.string.guildEventKickedTitle),
 							context.getString(R.string.guildEventKickedMessage)
 					);
+
+					EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+
+					dataHolder.provider = getName();
+					dataHolder.title = R.string.guildEventKickedTitle;
+					dataHolder.message = R.string.guildEventKickedMessage;
+
+					eventsSaver.register(dataHolder);
 				}
 			}
 		} catch (SnappydbException ignored) {
@@ -126,6 +140,15 @@ public final class GuildEventsNotifier extends NotifierFactory {
 							context.getString(R.string.guildEventMemberJoinsTitle),
 							context.getString(R.string.guildEventMemberJoinsMessage, username)
 					);
+
+					EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+
+					dataHolder.provider = getName();
+					dataHolder.title = R.string.guildEventMemberJoinsTitle;
+					dataHolder.message = R.string.guildEventMemberJoinsMessage;
+					dataHolder.args = new String[]{username};
+
+					eventsSaver.register(dataHolder);
 				}
 			}
 		}
@@ -143,6 +166,15 @@ public final class GuildEventsNotifier extends NotifierFactory {
 							context.getString(R.string.guildEventMemberLeavesTitle),
 							context.getString(R.string.guildEventMemberLeavesMessage, username)
 					);
+
+					EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+
+					dataHolder.provider = getName();
+					dataHolder.title = R.string.guildEventMemberLeavesTitle;
+					dataHolder.message = R.string.guildEventMemberLeavesMessage;
+					dataHolder.args = new String[]{username};
+
+					eventsSaver.register(dataHolder);
 				}
 			}
 		}

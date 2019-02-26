@@ -1,12 +1,15 @@
 package com.aidn5.myapplication;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
 import com.aidn5.hypeapp.notifiers.friends.FriendRemovalEvent;
+import com.aidn5.hypeapp.services.EventsSaver;
+import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.NotificationFactory;
 import com.snappydb.DBFactory;
 
@@ -28,7 +31,7 @@ public final class FriendRemovalEventTest {
 	private Method cacheFriendsUUIDs;
 
 	public FriendRemovalEventTest() throws Exception {
-		friendRemovalEvent = new FriendRemovalEvent(getContext(), DBFactory.open(getContext()));
+		friendRemovalEvent = new FriendRemovalEvent(getContext(), DBFactory.open(getContext()), new IgnProvider(getContext()), PreferenceManager.getDefaultSharedPreferences(getContext()), new EventsSaver(getContext()));
 
 		getFriendsUUIDsFromNet = friendRemovalEvent.getClass().getDeclaredMethod("getFriendsUUIDsFromNet");
 		getFriendsUUIDsFromNet.setAccessible(true);

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.aidn5.hypeapp.R;
+import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.NotificationFactory;
 import com.snappydb.DB;
@@ -20,14 +21,16 @@ public abstract class NotifierFactory {
 	protected final IgnProvider ignProvider;
 	protected final NotificationFactory notificationFactory;
 	protected final DB db;
+	protected final EventsSaver eventsSaver;
 
 	protected final SharedPreferences settings;
 
-	protected NotifierFactory(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+	protected NotifierFactory(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
 		this.ignProvider = ignProvider;
 		this.settings = settings;
 		this.context = context;
 		this.db = db;
+		this.eventsSaver = eventsSaver;
 
 		this.notificationFactory = new NotificationFactory(
 				context,
@@ -75,4 +78,11 @@ public abstract class NotifierFactory {
 	 * {@link com.aidn5.hypeapp.ServicesProvider.SyncProvider#doLoop(boolean)}
 	 */
 	public abstract void doLoop();
+
+	/**
+	 * Resource refers to the title of the event in {@link R.string}
+	 *
+	 * @return The title of this event as a resource from {@link R.string}
+	 */
+	public abstract int getName();
 }

@@ -54,14 +54,14 @@ public final class ServicesProvider extends Service {
 	}
 
 	private void createNotifiers() {
-		notifiers.add(new AppAnnouncementsEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+		notifiers.add(new AppAnnouncementsEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings(), g.getEventsSaver()));
 
-		notifiers.add(new ForumsEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+		notifiers.add(new ForumsEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings(), g.getEventsSaver()));
 
-		notifiers.add(new FriendRemovalEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
-		notifiers.add(new FriendIgnChangeEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+		notifiers.add(new FriendRemovalEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings(), g.getEventsSaver()));
+		notifiers.add(new FriendIgnChangeEvent(this, g.getDB(), g.getIgnProvider(), g.getSettings(), g.getEventsSaver()));
 
-		notifiers.add(new GuildEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings()));
+		notifiers.add(new GuildEventsNotifier(this, g.getDB(), g.getIgnProvider(), g.getSettings(), g.getEventsSaver()));
 	}
 
 	@Override

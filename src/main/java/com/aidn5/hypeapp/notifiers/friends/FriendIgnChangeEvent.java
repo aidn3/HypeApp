@@ -10,6 +10,7 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
 import com.snappydb.DB;
@@ -22,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 public final class FriendIgnChangeEvent extends NotifierFactory {
 	private static final int CHUNK_SIZE = 5; //How many players does every thread has to work with
 
-	public FriendIgnChangeEvent(Context context, DB db, IgnProvider ignProvider, SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public FriendIgnChangeEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
+		super(context, db, ignProvider, settings, eventsSaver);
 	}
 
 	/**
@@ -73,6 +74,11 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 		executor.shutdown();
 	}
 
+	@Override
+	public int getName() {
+		return R.string.showNotificationOnFriendIgnChanged_title;
+	}
+
 	private void lookUpUUIDs(String[] playersUUID) {
 		for (String uuid : playersUUID) {
 			ignProvider.cleanDB(); // clean the database to make the look-up faster
@@ -90,6 +96,15 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 						context.getString(R.string.friendsEventIgnChangedTitle),
 						context.getString(R.string.friendsEventIgnChangedMessage, user1, user2)
 				);
+
+				EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+
+				dataHolder.provider = getName();
+				dataHolder.title = R.string.friendsEventIgnChangedTitle;
+				dataHolder.message = R.string.friendsEventIgnChangedMessage;
+				dataHolder.args = new String[]{user1, user2};
+
+				eventsSaver.register(dataHolder);
 			}
 		}
 	}

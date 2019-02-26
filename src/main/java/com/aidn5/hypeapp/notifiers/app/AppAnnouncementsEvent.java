@@ -2,11 +2,13 @@ package com.aidn5.hypeapp.notifiers.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aidn5.hypeapp.BuildConfig;
 import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
 import com.snappydb.DB;
@@ -39,8 +41,8 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 	private static final String HANDLER_VERSION = "1.0";
 	private static final String URL_LINK = "https://aidn55.000webhostapp.com/anouncements.php?id=" + BuildConfig.APPLICATION_ID + "&version=" + HANDLER_VERSION;
 
-	public AppAnnouncementsEvent(Context context, DB db, IgnProvider ignProvider, SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public AppAnnouncementsEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
+		super(context, db, ignProvider, settings, eventsSaver);
 	}
 
 	/**
@@ -60,10 +62,21 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 
 					// If a notification is REALLY important, then show it
 					if (showNotification || announce.getBoolean("isImportant")) {
+						String message = announce.getString("message");
+
 						notificationFactory.notify(
 								context.getString(R.string.appEventAnnouncementTitle),
-								announce.getString("message")
+								message
 						);
+
+						EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+
+						dataHolder.provider = getName();
+						dataHolder.title = R.string.appEventAnnouncementTitle;
+						dataHolder.message = R.string.stringContainer;
+						dataHolder.args = new String[]{message};
+
+						eventsSaver.register(dataHolder);
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -82,6 +95,11 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 			} catch (SnappydbException ignored) {
 			}
 		}
+	}
+
+	@Override
+	public int getName() {
+		return R.string.showNotificationOnDeveloperAnnouncement_title;
 	}
 
 	/**

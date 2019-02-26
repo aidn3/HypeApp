@@ -9,6 +9,7 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
 import com.snappydb.DB;
@@ -25,8 +26,8 @@ import java.util.List;
 public final class FriendRemovalEvent extends NotifierFactory {
 	private static final String SETTINGS_FRIENDS_UUID = FriendRemovalEvent.class.getSimpleName() + "_FriendsUUID";
 
-	public FriendRemovalEvent(Context context, DB db, IgnProvider ignProvider, SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public FriendRemovalEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
+		super(context, db, ignProvider, settings, eventsSaver);
 	}
 
 	/**
@@ -51,6 +52,11 @@ public final class FriendRemovalEvent extends NotifierFactory {
 		if (cachedFriends == null) return;//The first time it runs will have no cache -> return
 
 		compareFriendsListsAndSendNotification(friends, cachedFriends);
+	}
+
+	@Override
+	public int getName() {
+		return R.string.showNotificationOnFriendRemoved_title;
 	}
 
 	/**
@@ -78,6 +84,15 @@ public final class FriendRemovalEvent extends NotifierFactory {
 						context.getString(R.string.friendsEventRemovedTitle),
 						context.getString(R.string.friendsEventRemovedMessage, username)
 				);
+
+				EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+
+				dataHolder.provider = getName();
+				dataHolder.title = R.string.friendsEventRemovedTitle;
+				dataHolder.message = R.string.friendsEventRemovedMessage;
+				dataHolder.args = new String[]{username};
+
+				eventsSaver.register(dataHolder);
 			}
 		}
 	}

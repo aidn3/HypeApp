@@ -56,4 +56,7 @@
     <string name="guildEventMemberJoinsTitle">Guild</string>
     <string name="guildEventMemberJoinsMessage">%s has joined the guild</string>
     <string name="appEventAnnouncementTitle">Announcement!</string>
+
+    <string name="stringContainer">%s</string>
+    <string name="guildsEvents">Guilds Events</string>
 </resources>

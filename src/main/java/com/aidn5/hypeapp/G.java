@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.evernote.android.job.JobRequest;
 import com.snappydb.DB;
@@ -23,6 +24,7 @@ import org.acra.annotation.AcraScheduler;
 @AcraNotification(resTitle = R.string.unhandled_exception, resText = R.string.unhandled_exception_message, resChannelName = R.string.app_notification_channel)
 public class G extends Application {
 	private IgnProvider ignProvider;
+	private EventsSaver eventsSaver;
 	private SharedPreferences settings;
 	private DB db = null;
 
@@ -32,6 +34,10 @@ public class G extends Application {
 
 	public final SharedPreferences getSettings() {
 		return settings != null ? settings : (settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+	}
+
+	public final EventsSaver getEventsSaver() {
+		return eventsSaver != null ? eventsSaver : (eventsSaver = new EventsSaver(getApplicationContext()));
 	}
 
 	public final DB getDB() {
