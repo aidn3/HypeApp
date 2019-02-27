@@ -67,7 +67,7 @@ public final class EventsSaver {
 
 		PREPARED_PUT.bindLong(2, dataHolder.title);
 		PREPARED_PUT.bindLong(3, dataHolder.message);
-		PREPARED_GET.bindString(4, dataHolder.argsToString());
+		PREPARED_PUT.bindString(4, dataHolder.argsToString());
 
 		PREPARED_PUT.bindLong(5, System.currentTimeMillis());
 
@@ -95,11 +95,11 @@ public final class EventsSaver {
 
 		while (cursor.moveToNext()) {
 			DataHolder dataHolder = new DataHolder();
-			dataHolder.provider = cursor.getInt(1);
-			dataHolder.title = cursor.getInt(2);
-			dataHolder.message = cursor.getInt(3);
-			dataHolder.stringToArgs(cursor.getString(4));
-			dataHolder.registerTime = cursor.getInt(5);
+			dataHolder.provider = cursor.getInt(0);
+			dataHolder.title = cursor.getInt(1);
+			dataHolder.message = cursor.getInt(2);
+			dataHolder.stringToArgs(cursor.getString(3));
+			dataHolder.registerTime = cursor.getInt(4);
 		}
 
 		cursor.close();
