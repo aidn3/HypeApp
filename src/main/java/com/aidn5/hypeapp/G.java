@@ -21,7 +21,7 @@ import org.acra.annotation.AcraScheduler;
 @AcraCore(buildConfigClass = BuildConfig.class, reportSenderFactoryClasses = ReportService.class)
 @AcraScheduler(requiresNetworkType = JobRequest.NetworkType.UNMETERED, requiresBatteryNotLow = true)
 @AcraLimiter()
-@AcraNotification(resTitle = R.string.unhandled_exception, resText = R.string.unhandled_exception_message, resChannelName = R.string.app_notification_channel)
+@AcraNotification(resTitle = R.string.app_name, resText = R.string.unhandled_exception_message, resChannelName = R.string.app_notification_channel)
 public class G extends Application {
 	private IgnProvider ignProvider;
 	private EventsSaver eventsSaver;
