@@ -6,10 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
+import com.aidn5.hypeapp.BuildConfig;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Events logger. saves events for later use
@@ -25,21 +26,34 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class EventsSaver {
-	private static final String TABLE_NAME = "data";
-	private static final String QUERY_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ('provider' INTEGER, 'title' INTEGER, 'message' INTEGER,'args' TEXT, 'registerTime' INTEGER);";
+	private static final String TABLE_NAME = "'" + "data" + BuildConfig.VERSION_NAME.replace(".", "_") + "'";
+	private static final String QUERY_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ('id' INTEGER PRIMARY KEY AUTOINCREMENT ,'provider' INTEGER, 'title' INTEGER, 'message' INTEGER,'args' TEXT, 'registerTime' INTEGER);";
 	private static final String QUERY_DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 	private static final String QUERY_PUT = "INSERT INTO " + TABLE_NAME + " ('provider', 'title', 'message', 'args', 'registerTime') VALUES (?, ?, ?, ?, ?);";
-	private static final String QUERY_GET = "SELECT * FROM " + TABLE_NAME + " where 1=1 LIMIT ? OFFSET ?";
+	private static final String QUERY_GET = "SELECT * FROM " + TABLE_NAME + " where 1=1 ORDER BY id DESC LIMIT ? OFFSET ?";
 
 	private final SQLiteDatabase sql;
+
+	/**
+	 * Compiled statement of INSERT to speed up the process of inserting new data into the database
+	 *
+	 * @see #register(DataHolder)
+	 */
 	private final SQLiteStatement PREPARED_PUT;
-	private final SQLiteStatement PREPARED_GET;
+
 	/**
 	 * on {@link #fetch(int)} how many items should a page has
 	 *
 	 * @see #fetch(int)
 	 */
-	public int pageRows = 25;
+	public int pageRows = 50;
+
+	/**
+	 * The maximum number of saved rows. Older rows will be deleted/not used
+	 *
+	 * @see #cleanOldRows()
+	 */
+	public int rowsLimit = 100;
 
 	public EventsSaver(@NonNull Context context) {
 		this.sql = SQLiteDatabase.openOrCreateDatabase(getDatabaseDir(context), null);
@@ -50,7 +64,6 @@ public final class EventsSaver {
 		// Compile the statements and save them
 		// so, we don't need to recompile them with every request
 		PREPARED_PUT = this.sql.compileStatement(QUERY_PUT);
-		PREPARED_GET = this.sql.compileStatement(QUERY_GET);
 	}
 
 	/**
@@ -69,7 +82,7 @@ public final class EventsSaver {
 		PREPARED_PUT.bindLong(3, dataHolder.message);
 		PREPARED_PUT.bindString(4, dataHolder.argsToString());
 
-		PREPARED_PUT.bindLong(5, System.currentTimeMillis());
+		PREPARED_PUT.bindLong(5, System.currentTimeMillis() / 1000L);
 
 		return PREPARED_PUT.executeInsert();
 	}
@@ -95,11 +108,13 @@ public final class EventsSaver {
 
 		while (cursor.moveToNext()) {
 			DataHolder dataHolder = new DataHolder();
-			dataHolder.provider = cursor.getInt(0);
-			dataHolder.title = cursor.getInt(1);
-			dataHolder.message = cursor.getInt(2);
-			dataHolder.stringToArgs(cursor.getString(3));
-			dataHolder.registerTime = cursor.getInt(4);
+			dataHolders.add(dataHolder);
+
+			dataHolder.provider = cursor.getInt(1);
+			dataHolder.title = cursor.getInt(2);
+			dataHolder.message = cursor.getInt(3);
+			dataHolder.stringToArgs(cursor.getString(4));
+			dataHolder.registerTime = cursor.getInt(5);
 		}
 
 		cursor.close();
@@ -107,22 +122,13 @@ public final class EventsSaver {
 	}
 
 	/**
-	 * Remove old rows which are older than n
-	 * <p>
-	 * A transaction will be made to speed up
-	 * the process of removing every individual row
+	 * Remove old rows which will never be used again
 	 *
+	 * @return number of removed rows
 	 * @see #clearAllRows()
 	 */
-	public synchronized int cleanOldRows(long olderThan, @NonNull TimeUnit timeUnit) {
-		this.sql.beginTransaction();
-
-		long millis = System.currentTimeMillis() - timeUnit.toMillis(olderThan);
-		int rows = this.sql.delete(TABLE_NAME, "registerTime < ?", new String[]{millis + ""});
-
-		this.sql.setTransactionSuccessful();
-
-		return rows;
+	public synchronized int cleanOldRows() {
+		return this.sql.delete(TABLE_NAME, "id not in (select id from " + TABLE_NAME + " order by id desc limit " + rowsLimit + ")", null);
 	}
 
 	/**
@@ -130,7 +136,7 @@ public final class EventsSaver {
 	 * <p>
 	 * A transaction will be made to speed up the process
 	 *
-	 * @see #cleanOldRows(long, TimeUnit)
+	 * @see #cleanOldRows()
 	 */
 	public synchronized void clearAllRows() {
 		this.sql.beginTransaction();
@@ -159,7 +165,7 @@ public final class EventsSaver {
 	 *
 	 * @see EventsSaver
 	 */
-	public final class DataHolder {
+	public static final class DataHolder {
 		public int provider;
 		public int title;
 		public int message;
