@@ -9,6 +9,8 @@
     which is the responsible on providing notifications and sync in the background-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".G"
         android:allowBackup="true"
@@ -21,6 +23,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".activities.main_activity.MainActivity"
+            android:hardwareAccelerated="true"
             android:theme="@style/MainActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

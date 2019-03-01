@@ -28,7 +28,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class GuildFragment extends BaseFragment {
+public final class GuildFragment extends BaseFragment {
 	private static final byte NO_GUILD_FOUND = 5;
 
 	@Override
@@ -44,11 +44,11 @@ public class GuildFragment extends BaseFragment {
 
 	@Override
 	public synchronized void refresh() {
-		setState(LOADING); // show the loading indicator
+		setState(EVENT_LOADING); // show the loading indicator
 
 		Context context = getContext();
 		if (context == null) {
-			setState(FAILED);
+			setState(EVENT_FAILED);
 			return;
 		}
 
@@ -58,7 +58,7 @@ public class GuildFragment extends BaseFragment {
 
 		// Check on errors
 		if (!friendsRequest.isSuccess) {
-			setState(FAILED);
+			setState(EVENT_FAILED);
 			return;
 		}
 
@@ -73,7 +73,7 @@ public class GuildFragment extends BaseFragment {
 				getLayoutInflater(), context, new IgnProvider(context),
 				guild.getDetailedGuildMembers());
 
-		setState(LOADED); //Send signal to use and display the adapter
+		setState(EVENT_LOADED); //Send signal to use and display the adapter
 	}
 
 	private final class Adapter extends BaseAdapter {
@@ -84,7 +84,7 @@ public class GuildFragment extends BaseFragment {
 		private final LayoutInflater inflater;
 		private final List<GuildMember> guildMembers;
 
-		Adapter(LayoutInflater inflater, Context context, IgnProvider ignProvider, List<GuildMember> guildMembers) {
+		Adapter(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull IgnProvider ignProvider, @NonNull List<GuildMember> guildMembers) {
 			this.inflater = inflater;
 			this.imageLoader = new Picasso.Builder(context).build();
 			this.guildMembers = guildMembers;

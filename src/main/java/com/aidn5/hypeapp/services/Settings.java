@@ -9,6 +9,8 @@ public enum Settings {
 	showNotificationOnForumsNotifications,
 	showNotificationOnFriendRemoved, showNotificationOnFriendIgnChanged, showNotificationOnFriendJoined,
 	showNotificationOnGuildMemberJoins,
-	showNotificationOnGuildMemberLeaves, showNotificationOnGuildSelfLeaves;
+	showNotificationOnGuildMemberLeaves, showNotificationOnGuildSelfLeaves,
+	defaultEventView
+
 
 }

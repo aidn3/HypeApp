@@ -48,7 +48,7 @@
     <string name="hold_to_make_this_view_default">hold to make this view default</string>
     <string name="friends">Friends</string>
     <string name="friendsEventIgnChangedTitle">Ign\'s Friends changed</string>
-    <string name="friendsEventIgnChangedMessage">% has changed their Ign to %s!</string>
+    <string name="friendsEventIgnChangedMessage">%s has changed their Ign to %s!</string>
     <string name="guildEventKickedTitle">Guild</string>
     <string name="guildEventKickedMessage">You have been kicked from the guild :(</string>
     <string name="guildEventMemberLeavesTitle">Guild</string>
@@ -60,4 +60,8 @@
     <string name="guildsEvents">Guilds Events</string>
     <string name="guild">Guild</string>
     <string name="eventsTitle">O</string>
+
+    <string name="time_just_now">Just now</string>
+    <string name="time_in_minutes_and_hours_ago">%d hours and %d minutes ago</string>
+    <string name="time_in_minutes_and_seconds_ago">%d minutes and %d seconds ago</string>
 </resources>

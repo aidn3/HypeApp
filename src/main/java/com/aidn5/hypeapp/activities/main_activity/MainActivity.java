@@ -32,12 +32,22 @@ public class MainActivity extends BaseActivity {
 		// primary sections of the activity.
 		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
+
 		// Set up the ViewPager with the sections adapter.
 		ViewPager mViewPager = findViewById(container);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
+		// Choose the TAB which the user chose to auto load on start
+		for (int i = 0; i < mSectionsPagerAdapter.fragments.size(); i++) {
+			BaseFragment fragment = mSectionsPagerAdapter.fragments.get(i);
+			if (fragment.autoLoad(getApplicationContext())) {
+				mViewPager.setCurrentItem(i);
+			}
+		}
+
 		TabLayout tabLayout = findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(mViewPager);
+
 
 		// Make the first tab in the tabs smaller (width)
 		LinearLayout layout = ((LinearLayout) ((LinearLayout) tabLayout.getChildAt(0)).getChildAt(0));

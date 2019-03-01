@@ -31,11 +31,11 @@ public final class FriendsFragment extends BaseFragment {
 
 	@Override
 	public synchronized void refresh() {
-		setState(LOADING); // show the loading indicator
+		setState(EVENT_LOADING); // show the loading indicator
 
 		Context context = getContext();
 		if (context == null) {
-			setState(FAILED);
+			setState(EVENT_FAILED);
 			return;
 		}
 
@@ -47,16 +47,14 @@ public final class FriendsFragment extends BaseFragment {
 
 		// Check on errors
 		if (!friendsRequest.isSuccess || friends == null) {
-			setState(FAILED);
+			setState(EVENT_FAILED);
 			return;
 		}
 
 		// Create the adapter and set it
-		this.adapter = new Adapter(
-				getLayoutInflater(), context, new IgnProvider(context),
-				friends);
+		this.adapter = new Adapter(getLayoutInflater(), context, new IgnProvider(context), friends);
 
-		setState(LOADED); //Send signal to use and display the adapter
+		setState(EVENT_LOADED); //Send signal to use and display the adapter
 	}
 
 	//todo: [feature] FriendsFragment: load the data of best-friends
@@ -68,7 +66,7 @@ public final class FriendsFragment extends BaseFragment {
 		private final LayoutInflater inflater;
 		private final Player[] players;
 
-		Adapter(LayoutInflater inflater, Context context, IgnProvider ignProvider, String[] uuids) {
+		Adapter(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull IgnProvider ignProvider, @NonNull String[] uuids) {
 			this.inflater = inflater;
 			this.imageLoader = new Picasso.Builder(context).build();
 			this.players = new Player[uuids.length];
