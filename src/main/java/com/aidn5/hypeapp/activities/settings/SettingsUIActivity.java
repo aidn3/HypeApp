@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import com.aidn5.hypeapp.R;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SettingsUIActivity extends PreferenceActivity {
 	/**
@@ -76,9 +77,9 @@ public class SettingsUIActivity extends PreferenceActivity {
 
 	public static void triggerBindPreferenceSummaryToValue(Preference preference) {
 		sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-				PreferenceManager
+				Objects.requireNonNull(PreferenceManager
 						.getDefaultSharedPreferences(preference.getContext())
-						.getString(preference.getKey(), ""));
+						.getString(preference.getKey(), "")));
 	}
 
 	@Override
@@ -116,10 +117,5 @@ public class SettingsUIActivity extends PreferenceActivity {
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.pref_headers, target);
-	}
-
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 	}
 }

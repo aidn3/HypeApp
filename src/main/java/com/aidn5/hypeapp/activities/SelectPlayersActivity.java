@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -295,8 +294,6 @@ public class SelectPlayersActivity extends BaseActivity {
 	}
 
 	private class Player {
-		private Bitmap headPlayer;
-
 		private boolean isChecked;
 		private String username;
 		private String uuid;

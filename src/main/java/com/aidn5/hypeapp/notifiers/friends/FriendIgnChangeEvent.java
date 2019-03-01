@@ -132,6 +132,7 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 	 * @param chunkSize    how many items does every array has to have at max
 	 * @return arrays of smaller arrays of the original array
 	 */
+	@SuppressWarnings("SameParameterValue")
 	@NonNull
 	private String[][] splitArray(@NonNull String[] arrayToSplit, int chunkSize) {
 		chunkSize = Math.abs(chunkSize);

@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PluralsCandidate">
     <string name="app_name">HypeApp</string>
 
     <string name="settings">Settings</string>
@@ -16,11 +16,9 @@
     <string name="the_server_did_not_response">The server did not response :/</string>
 
     <string name="something_went_wrong">Something went wrong :(</string>
-    <string name="unhandled_exception">Unhandled Exception</string>
 
     <string name="bflP_search_hint">search e.g. aidn5</string>
     <string name="error_dialog_view_error">Show Error</string>
-    <string name="dismiss">Dismiss</string>
     <string name="error">Error</string>
     <string name="report_to_dev">Report Error</string>
     <string name="no_api">You did not register your Hypixel API! \r\nRegister yours from the settings</string>
@@ -29,8 +27,6 @@
     <string name="hypixel_api_invalid">Your Hypixel\'s API has been revoked. Create new one and register it in the settings</string>
     <string name="hypixel_api_cannot_parse">Something went horribly wrong \\r\\n Can not parse the content to display</string>
     <string name="error_internet">Check your internet and try again</string>
-    <string name="bestFriendsList_toolBar">My Best Friend List</string>
-    <string name="action_settings">Settings</string>
     <string name="select_players_save_message">Do you want to save this list?</string>
     <string name="unhandled_exception_message">Something went REALLY bad. Do you want to help by sending the collected bug report to the developer?</string>
 
@@ -40,8 +36,7 @@
     <string name="next_sync_at">Next sync at: </string>
     <string name="binding_to_the_service">(Binding to the service…)</string>
 
-    <string name="hour">%i Hour</string>
-    <string name="time_in_minutes_and_hours">%d hour and %d minute</string>
+    <string name="time_in_minutes_and_hours">%d hours and %d minutes</string>
     <string name="time_in_minutes_and_seconds">%d minute and %d second</string>
     <string name="syncing">Syncing</string>
     <string name="tap_to_load">Tap to load</string>

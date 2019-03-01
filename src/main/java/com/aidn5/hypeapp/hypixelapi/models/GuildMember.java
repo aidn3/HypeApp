@@ -22,6 +22,7 @@ public class GuildMember implements Comparable<GuildMember> {
 
 	public int lastTimeOnline = -1;
 	public HashMap<Integer, Integer> coins = null;
+	@SuppressWarnings("FieldCanBeLocal")
 	private double hypixelLevel = -1;
 	private int totalGuildExp = -1;
 

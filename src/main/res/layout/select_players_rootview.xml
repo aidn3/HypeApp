@@ -21,7 +21,8 @@
         android:layout_height="wrap_content"
         android:hint="@string/bflP_search_hint"
         android:inputType="textNoSuggestions"
-        android:lines="1" />
+        android:lines="1"
+        android:autofillHints="" />
 
     <ListView
         android:id="@+id/bflP_List"

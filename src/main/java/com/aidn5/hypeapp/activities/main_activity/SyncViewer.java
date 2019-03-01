@@ -47,12 +47,7 @@ final class SyncViewer extends Timer {
 			@Override
 			public void run() {
 				try {
-					activity.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							setStatus();
-						}
-					});
+					activity.runOnUiThread(SyncViewer.this::setStatus);
 				} catch (Exception ignored) {
 				}
 			}

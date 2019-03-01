@@ -41,6 +41,7 @@ abstract class Cacher {
 	 * @param string the data to be saved
 	 * @return TRUE on success
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	protected final boolean saveCache(String key, String string) {
 		if (!initSuccess(cacheFolder)) return false;
 

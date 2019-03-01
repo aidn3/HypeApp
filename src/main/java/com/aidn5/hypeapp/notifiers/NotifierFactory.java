@@ -66,6 +66,7 @@ public abstract class NotifierFactory {
 	 *
 	 * @return TRUE if the user online on hypixel network. FALSE if not
 	 */
+	@SuppressWarnings("SameReturnValue")
 	protected boolean isTheUserOnline() {
 		//TODO: [Auto-Gen] code the method FriendRemovalEvent#isTheUserOnline()
 		return false;

@@ -88,33 +88,34 @@ public final class EventsFragment extends BaseFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			View view = convertView;
 			final Holder holder;
 			EventsSaver.DataHolder dataHolder = this.dataHolders.get(position);
 
-			if (convertView == null) {
+			if (view == null) {
 				holder = new Holder();
-				convertView = this.inflater.inflate(R.layout.event_item, null);
+				view = this.inflater.inflate(R.layout.event_item, null);
 
-				holder.text1 = convertView.findViewById(R.id.event_item_text1);
-				holder.text2 = convertView.findViewById(R.id.event_item_text2);
-				holder.time = convertView.findViewById(R.id.event_item_time);
+				holder.text1 = view.findViewById(R.id.event_item_text1);
+				holder.text2 = view.findViewById(R.id.event_item_text2);
+				holder.time = view.findViewById(R.id.event_item_time);
 
-				convertView.setTag(holder);
+				view.setTag(holder);
 			} else {
-				holder = (Holder) convertView.getTag();
+				holder = (Holder) view.getTag();
 			}
 
 			holder.text1.setText(this.context.getString(dataHolder.title));
 			holder.text2.setText(this.context.getString(dataHolder.message, (Object[]) dataHolder.args));
 			holder.time.setText(Utils.createDateOrMessage(this.context, (int) (System.currentTimeMillis() / 1000L) - dataHolder.registerTime));
 
-			return convertView;
+			return view;
 		}
 
 		private final class Holder {
-			TextView text1;
-			TextView text2;
-			TextView time;
+			private TextView text1;
+			private TextView text2;
+			private TextView time;
 		}
 	}
 }

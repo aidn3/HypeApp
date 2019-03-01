@@ -14,6 +14,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+/**
+ * provides a direct method to get the data from the Hypixel API
+ * <p>
+ * since the original source code uses high level methods
+ * this alternative class made to take its place
+ *
+ * @see FriendsRequest
+ */
 public final class GuildRequest extends AbstractedRequest {
 	private static final String REQUEST_GET_GUILD = HYPIXEL_URL + "guild?";
 	private static final String REQUEST_FIND_GUILD = HYPIXEL_URL + "findGuild?";

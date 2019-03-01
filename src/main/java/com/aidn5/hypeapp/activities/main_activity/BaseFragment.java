@@ -39,6 +39,7 @@ import java.util.Objects;
  * to run their event {@link #onLoadingEvent(LayoutInflater, ViewGroup)}, {@link #onLoadedEvent(LayoutInflater, ViewGroup)},...
  * or using custom events {@link #onCustomEvent(LayoutInflater, ViewGroup)}
  */
+@SuppressWarnings({"WeakerAccess", "unused", "SameReturnValue"})
 abstract class BaseFragment extends Fragment {
 	protected final static byte EVENT_PENDING = 1;
 	protected final static byte EVENT_LOADING = 2;

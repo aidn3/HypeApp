@@ -16,13 +16,11 @@ import java.net.URLConnection;
 
 abstract class AbstractedRequest extends Cacher {
 	protected static final String HYPIXEL_URL = "https://api.hypixel.net/";
-	private final Context context;
 	protected long dataFromCache = -1;
 
 	protected AbstractedRequest(Context context) {
 		super(context);
 
-		this.context = context;
 		initForNewRequest();
 	}
 
@@ -68,11 +66,8 @@ abstract class AbstractedRequest extends Cacher {
 		return result.toString("UTF-8");
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	protected final boolean isValidUUID(String uuid) {
 		return uuid != null && !uuid.isEmpty();
-	}
-
-	protected final Context getContext() {
-		return this.context;
 	}
 }

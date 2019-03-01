@@ -3,7 +3,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/82d84a8989384d598b8ada5e8f45b8db)](https://app.codacy.com/app/aidn3/HypeApp?utm_source=github.com&utm_medium=referral&utm_content=aidn3/HypeApp&utm_campaign=Badge_Grade_Dashboard)
 
 App works on androids platform help people who has strong bonds with hypixel network to stay
-**This project is still under development. Not all the fearures works**
+**This project is still under development. Not all the features works**
 
 -	[Features](#features)
 -	[Friends](#friends)
@@ -12,10 +12,10 @@ App works on androids platform help people who has strong bonds with hypixel net
 
 ## Features
 -	Show notifications 
--	Create My-Best-Friends listand receive notifications about them
+-	Create My-Best-Friends list and receive notifications about them
 -	Uses External-Server to reduce the load on the phone
--	Automatically (togglable) sends error reports
--	Sync in background (to receive notifications without openning the app)
+-	Automatically (toggleable) sends error reports
+-	Sync in background (to receive notifications without opening the app)
 
 ## Friends
 -	in-App: Friends list (who is online, their ranks, what do they play)

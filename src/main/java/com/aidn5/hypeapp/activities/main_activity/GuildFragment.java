@@ -120,20 +120,21 @@ public final class GuildFragment extends BaseFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			View view = convertView;
 			final Holder holder;
 			GuildMember guildMember = this.guildMembers.get(position);
 
-			if (convertView == null) {
+			if (view == null) {
 				holder = new Holder();
-				convertView = this.inflater.inflate(R.layout.players_list_adatper_item, null);
+				view = this.inflater.inflate(R.layout.players_list_adatper_item, null);
 
-				holder.head = convertView.findViewById(R.id.SPL_item_image);
-				holder.text1 = convertView.findViewById(R.id.SPL_item_text1);
-				holder.text2 = convertView.findViewById(R.id.SPL_item_text2);
+				holder.head = view.findViewById(R.id.SPL_item_image);
+				holder.text1 = view.findViewById(R.id.SPL_item_text1);
+				holder.text2 = view.findViewById(R.id.SPL_item_text2);
 
-				convertView.setTag(holder);
+				view.setTag(holder);
 			} else {
-				holder = (Holder) convertView.getTag();
+				holder = (Holder) view.getTag();
 			}
 
 			//todo: [feature] GuildFragment: Add color to tag/ranks of guildMembers
@@ -148,13 +149,13 @@ public final class GuildFragment extends BaseFragment {
 					.placeholder(R.drawable.default_player_head)
 					.into(holder.head);
 
-			return convertView;
+			return view;
 		}
 
 		private final class Holder {
-			ImageView head;
-			TextView text1;
-			TextView text2;
+			private ImageView head;
+			private TextView text1;
+			private TextView text2;
 		}
 	}
 }

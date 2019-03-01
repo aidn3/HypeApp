@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_playerList_load_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/selectableItemBackground"
@@ -16,7 +15,6 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/main_playerList_load_text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/main_playerList_load_text1"

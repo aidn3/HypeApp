@@ -66,15 +66,15 @@ public final class FriendsFragment extends BaseFragment {
 		private final LayoutInflater inflater;
 		private final Player[] players;
 
-		Adapter(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull IgnProvider ignProvider, @NonNull String[] uuids) {
+		Adapter(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull IgnProvider ignProvider, @NonNull String[] UUIDs) {
 			this.inflater = inflater;
 			this.imageLoader = new Picasso.Builder(context).build();
-			this.players = new Player[uuids.length];
+			this.players = new Player[UUIDs.length];
 
-			for (int i = 0; i < uuids.length; i++) {
+			for (int i = 0; i < UUIDs.length; i++) {
 
 				Player player = (players[i] = new Player());
-				player.uuid = uuids[i];
+				player.uuid = UUIDs[i];
 
 				poolExecutor.execute(new Runnable() {
 					@Override
@@ -104,20 +104,21 @@ public final class FriendsFragment extends BaseFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			View view = convertView;
 			final Holder holder;
 			Player player = this.players[position];
 
-			if (convertView == null) {
+			if (view == null) {
 				holder = new Holder();
-				convertView = this.inflater.inflate(R.layout.players_list_adatper_item, null);
+				view = this.inflater.inflate(R.layout.players_list_adatper_item, null);
 
-				holder.head = convertView.findViewById(R.id.SPL_item_image);
-				holder.text1 = convertView.findViewById(R.id.SPL_item_text1);
-				holder.text2 = convertView.findViewById(R.id.SPL_item_text2);
+				holder.head = view.findViewById(R.id.SPL_item_image);
+				holder.text1 = view.findViewById(R.id.SPL_item_text1);
+				holder.text2 = view.findViewById(R.id.SPL_item_text2);
 
-				convertView.setTag(holder);
+				view.setTag(holder);
 			} else {
-				holder = (Holder) convertView.getTag();
+				holder = (Holder) view.getTag();
 			}
 
 			holder.text1.setText((player.username != null) ? player.username : player.uuid);
@@ -127,18 +128,18 @@ public final class FriendsFragment extends BaseFragment {
 					.placeholder(R.drawable.default_player_head)
 					.into(holder.head);
 
-			return convertView;
+			return view;
 		}
 
 		private final class Holder {
-			ImageView head;
-			TextView text1;
-			TextView text2;
+			private ImageView head;
+			private TextView text1;
+			private TextView text2;
 		}
 
 		private final class Player {
-			String uuid;
-			String username;
+			private String uuid;
+			private String username;
 
 			//String doing;
 			//boolean isCached;
