@@ -41,15 +41,15 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 	private static final String HANDLER_VERSION = "1.0";
 	private static final String URL_LINK = "https://aidn55.000webhostapp.com/anouncements.php?id=" + BuildConfig.APPLICATION_ID + "&version=" + HANDLER_VERSION;
 
-	public AppAnnouncementsEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
-		super(context, db, ignProvider, settings, eventsSaver);
+	public AppAnnouncementsEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+		super(context, db, ignProvider, settings);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void doLoop() {
+	public final void doLoop(@NonNull EventsSaver eventsSaver) {
 		String data = fetchData();
 		if (data == null) return; // no data -> nothing to show/update -> return
 
@@ -69,7 +69,7 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 								message
 						);
 
-						EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+						EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
 						dataHolder.provider = getName();
 						dataHolder.title = R.string.appEventAnnouncementTitle;

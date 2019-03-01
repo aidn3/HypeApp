@@ -23,15 +23,15 @@ import java.util.concurrent.TimeUnit;
 public final class FriendIgnChangeEvent extends NotifierFactory {
 	private static final int CHUNK_SIZE = 5; //How many players does every thread has to work with
 
-	public FriendIgnChangeEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
-		super(context, db, ignProvider, settings, eventsSaver);
+	public FriendIgnChangeEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+		super(context, db, ignProvider, settings);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void doLoop() {
+	public void doLoop(@NonNull EventsSaver eventsSaver) {
 		boolean showNotification = settings.getBoolean(Settings.showNotificationOnFriendIgnChanged.name(), true);
 
 		// We don't need to look up the usernames anymore,
@@ -57,7 +57,7 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 			executor.execute(new Runnable() {
 				@Override
 				public void run() {
-					lookUpUUIDs(chunk);
+					lookUpUUIDs(eventsSaver, chunk);
 				}
 			});
 		}
@@ -79,7 +79,7 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 		return R.string.showNotificationOnFriendIgnChanged_title;
 	}
 
-	private void lookUpUUIDs(String[] playersUUID) {
+	private void lookUpUUIDs(@NonNull EventsSaver eventsSaver, @NonNull String[] playersUUID) {
 		for (String uuid : playersUUID) {
 			ignProvider.cleanDB(); // clean the database to make the look-up faster
 
@@ -97,7 +97,7 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 						context.getString(R.string.friendsEventIgnChangedMessage, user1, user2)
 				);
 
-				EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+				EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
 				dataHolder.provider = getName();
 				dataHolder.title = R.string.friendsEventIgnChangedTitle;

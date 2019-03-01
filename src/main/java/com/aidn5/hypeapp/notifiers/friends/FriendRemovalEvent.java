@@ -26,15 +26,15 @@ import java.util.List;
 public final class FriendRemovalEvent extends NotifierFactory {
 	private static final String SETTINGS_FRIENDS_UUID = FriendRemovalEvent.class.getSimpleName() + "_FriendsUUID";
 
-	public FriendRemovalEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
-		super(context, db, ignProvider, settings, eventsSaver);
+	public FriendRemovalEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+		super(context, db, ignProvider, settings);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void doLoop() {
+	public final void doLoop(@NonNull EventsSaver eventsSaver) {
 		String[] friends = getFriendsUUIDsFromNet();
 		if (friends == null) return; //Cant load the list -> nothing to update -> return
 
@@ -51,7 +51,7 @@ public final class FriendRemovalEvent extends NotifierFactory {
 			return; //The user will notice it -> no need to compare/show notifications
 		if (cachedFriends == null) return;//The first time it runs will have no cache -> return
 
-		compareFriendsListsAndSendNotification(friends, cachedFriends);
+		compareFriendsListsAndSendNotification(eventsSaver, friends, cachedFriends);
 	}
 
 	@Override
@@ -62,17 +62,17 @@ public final class FriendRemovalEvent extends NotifierFactory {
 	/**
 	 * Compare the two lists, find the missing object from the upToDateList and send notifications
 	 * <p>
-	 * After running {@link #doLoop()}
+	 * After running {@link #doLoop(EventsSaver)}
 	 * and granting the permission to send notifications
-	 * {@link #doLoop()} calls at the end
+	 * {@link #doLoop(EventsSaver)} calls at the end
 	 * to compare the lists and show changes as notifications.
 	 * <p>
-	 * This method has been created to divide {@link #doLoop()} to ease the readability
+	 * This method has been created to divide {@link #doLoop(EventsSaver)} to ease the readability
 	 *
 	 * @param upToDateList the retrieved list from the server
 	 * @param cachedList   the saved list
 	 */
-	private void compareFriendsListsAndSendNotification(@NonNull String[] upToDateList, @NonNull String[] cachedList) {
+	private void compareFriendsListsAndSendNotification(@NonNull EventsSaver eventsSaver, @NonNull String[] upToDateList, @NonNull String[] cachedList) {
 		List<String> friendsFromNet = Arrays.asList(upToDateList);//Convert to list. so it supports #contains
 
 		for (String cachedFriend : cachedList) {
@@ -85,7 +85,7 @@ public final class FriendRemovalEvent extends NotifierFactory {
 						context.getString(R.string.friendsEventRemovedMessage, username)
 				);
 
-				EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+				EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
 				dataHolder.provider = getName();
 				dataHolder.title = R.string.friendsEventRemovedTitle;

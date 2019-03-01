@@ -21,16 +21,14 @@ public abstract class NotifierFactory {
 	protected final IgnProvider ignProvider;
 	protected final NotificationFactory notificationFactory;
 	protected final DB db;
-	protected final EventsSaver eventsSaver;
 
 	protected final SharedPreferences settings;
 
-	protected NotifierFactory(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
+	protected NotifierFactory(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
 		this.ignProvider = ignProvider;
 		this.settings = settings;
 		this.context = context;
 		this.db = db;
-		this.eventsSaver = eventsSaver;
 
 		this.notificationFactory = new NotificationFactory(
 				context,
@@ -76,8 +74,10 @@ public abstract class NotifierFactory {
 	/**
 	 * The interface, which will be called from
 	 * {@link com.aidn5.hypeapp.ServicesProvider.SyncProvider#doLoop(boolean)}
+	 *
+	 * @param eventsSaver Instance to save the events
 	 */
-	public abstract void doLoop();
+	public abstract void doLoop(@NonNull EventsSaver eventsSaver);
 
 	/**
 	 * Resource refers to the title of the event in {@link R.string}

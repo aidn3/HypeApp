@@ -22,15 +22,15 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	private static final String SETTINGS_IS_IN_GUILD = GuildEventsNotifier.class.getSimpleName() + "_IsInGuild";
 	private static final String SETTINGS_GUILD_MEMBERS = GuildEventsNotifier.class.getSimpleName() + "_GuildMembers";
 
-	public GuildEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
-		super(context, db, ignProvider, settings, eventsSaver);
+	public GuildEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+		super(context, db, ignProvider, settings);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void doLoop() {
+	public void doLoop(@NonNull EventsSaver eventsSaver) {
 		boolean guildMemberJoins = settings.getBoolean(Settings.showNotificationOnGuildMemberJoins.name(), false);
 		boolean guildMemberLeaves = settings.getBoolean(Settings.showNotificationOnGuildMemberLeaves.name(), false);
 		boolean guildSelfLeaves = settings.getBoolean(Settings.showNotificationOnGuildSelfLeaves.name(), false);
@@ -47,7 +47,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 		Guild guild = (Guild) hypixelReplay.value;
 		boolean isInGuild = (guild != null);
 
-		isUserKickedEvent(isInGuild, guildSelfLeaves, isTheUserOnline);
+		isUserKickedEvent(eventsSaver, isInGuild, guildSelfLeaves, isTheUserOnline);
 
 		if (!isInGuild) {
 			//Let's remove all the members from the list to not conflict them with another guild
@@ -59,7 +59,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 		String[] members = guild.getUUIDMembers();
 
 		if (cachedMembers != null)
-			isMemberLeftJoinedEvent(members, cachedMembers, guildMemberJoins, guildMemberLeaves, isTheUserOnline);
+			isMemberLeftJoinedEvent(eventsSaver, members, cachedMembers, guildMemberJoins, guildMemberLeaves, isTheUserOnline);
 
 		cacheGuildMembers(members);
 	}
@@ -78,7 +78,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 * @param guildSelfLeaves is showing notifications granted?
 	 * @param isTheUserOnline is the user of this app is on hypixel network?
 	 */
-	private void isUserKickedEvent(boolean inGuild, boolean guildSelfLeaves, boolean isTheUserOnline) {
+	private void isUserKickedEvent(@NonNull EventsSaver eventsSaver, boolean inGuild, boolean guildSelfLeaves, boolean isTheUserOnline) {
 		try {
 			if (!isTheUserOnline && guildSelfLeaves) {
 				boolean isInGuildCache = db.getBoolean(SETTINGS_IS_IN_GUILD);
@@ -88,7 +88,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 							context.getString(R.string.guildEventKickedMessage)
 					);
 
-					EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+					EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
 					dataHolder.provider = getName();
 					dataHolder.title = R.string.guildEventKickedTitle;
@@ -123,7 +123,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 * @param guildMemberLeaves is showing notifications granted for leaving the guild event?
 	 * @param isTheUserOnline   is the user of this app is on hypixel network?
 	 */
-	private void isMemberLeftJoinedEvent(@NonNull String[] members, @NonNull String[] cachedMembers, boolean guildMemberJoins, boolean guildMemberLeaves, boolean isTheUserOnline) {
+	private void isMemberLeftJoinedEvent(@NonNull EventsSaver eventsSaver, @NonNull String[] members, @NonNull String[] cachedMembers, boolean guildMemberJoins, boolean guildMemberLeaves, boolean isTheUserOnline) {
 		if ((!guildMemberJoins && !guildMemberLeaves) || isTheUserOnline)
 			return; //No need to create objects, compare then show notifications
 
@@ -141,7 +141,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 							context.getString(R.string.guildEventMemberJoinsMessage, username)
 					);
 
-					EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+					EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
 					dataHolder.provider = getName();
 					dataHolder.title = R.string.guildEventMemberJoinsTitle;
@@ -167,7 +167,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 							context.getString(R.string.guildEventMemberLeavesMessage, username)
 					);
 
-					EventsSaver.DataHolder dataHolder = eventsSaver.new DataHolder();
+					EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
 					dataHolder.provider = getName();
 					dataHolder.title = R.string.guildEventMemberLeavesTitle;

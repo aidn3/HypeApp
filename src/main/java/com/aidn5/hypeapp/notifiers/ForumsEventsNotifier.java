@@ -10,12 +10,12 @@ import com.aidn5.hypeapp.services.IgnProvider;
 import com.snappydb.DB;
 
 public final class ForumsEventsNotifier extends NotifierFactory {
-	public ForumsEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings, @NonNull EventsSaver eventsSaver) {
-		super(context, db, ignProvider, settings, eventsSaver);
+	public ForumsEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+		super(context, db, ignProvider, settings);
 	}
 
 	@Override
-	public final void doLoop() {
+	public final void doLoop(@NonNull EventsSaver eventsSaver) {
 		//TODO: [Auto-Gen] Add feature AppEventsNotifier
 	}
 
