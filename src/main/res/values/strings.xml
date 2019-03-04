@@ -57,6 +57,7 @@
     <string name="eventsTitle">O</string>
 
     <string name="time_just_now">Just now</string>
+    <string name="time_in_hours_and_days_ago">%d days and %d hours ago</string>
     <string name="time_in_minutes_and_hours_ago">%d hours and %d minutes ago</string>
     <string name="time_in_minutes_and_seconds_ago">%d minutes and %d seconds ago</string>
 </resources>

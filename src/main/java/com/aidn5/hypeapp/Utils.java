@@ -13,6 +13,13 @@ public class Utils {
 		if (minutes >= 60) {
 			int hours = minutes / 60;
 			minutes %= 60;
+
+			if (hours >= 24) {
+				int days = hours / 24;
+				hours %= 24;
+
+				return context.getString(R.string.time_in_hours_and_days_ago, days, hours);
+			}
 			return context.getString(R.string.time_in_minutes_and_hours_ago, hours, minutes);
 		}
 		return context.getString(R.string.time_in_minutes_and_seconds_ago, minutes, seconds);
