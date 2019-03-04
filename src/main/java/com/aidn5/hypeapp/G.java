@@ -14,14 +14,28 @@ import com.snappydb.SnappydbException;
 
 import org.acra.ACRA;
 import org.acra.annotation.AcraCore;
+import org.acra.annotation.AcraHttpSender;
 import org.acra.annotation.AcraLimiter;
 import org.acra.annotation.AcraNotification;
 import org.acra.annotation.AcraScheduler;
+import org.acra.sender.HttpSender;
 
-@AcraCore(buildConfigClass = BuildConfig.class, reportSenderFactoryClasses = ReportService.class)
-@AcraScheduler(requiresNetworkType = JobRequest.NetworkType.UNMETERED, requiresBatteryNotLow = true)
+@AcraCore(buildConfigClass = BuildConfig.class)
+@AcraScheduler(
+		requiresNetworkType = JobRequest.NetworkType.UNMETERED,
+		requiresBatteryNotLow = true,
+		requiresDeviceIdle = true
+)
+@AcraHttpSender(
+		httpMethod = HttpSender.Method.POST,
+		uri = "https://collector.tracepot.com/1666058e"
+)
 @AcraLimiter()
-@AcraNotification(resTitle = R.string.app_name, resText = R.string.unhandled_exception_message, resChannelName = R.string.app_notification_channel)
+@AcraNotification(
+		resTitle = R.string.app_name,
+		resText = R.string.unhandled_exception_message,
+		resChannelName = R.string.app_notification_channel
+)
 public class G extends Application {
 	private IgnProvider ignProvider;
 	private EventsSaver eventsSaver;

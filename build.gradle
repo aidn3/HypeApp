@@ -36,6 +36,8 @@ dependencies {
     implementation "ch.acra:acra-core:$acraVersion"
     //Limiter: to limit the number of crash reports per user
     implementation "ch.acra:acra-limiter:$acraVersion"
+    //report-sender sends the reports by http
+    implementation "ch.acra:acra-http:$acraVersion"
     //Show a notification on exception and let the user decides whether to send report
     implementation "ch.acra:acra-notification:$acraVersion"
     //schedules the reports
