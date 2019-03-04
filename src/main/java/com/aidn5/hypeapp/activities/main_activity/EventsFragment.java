@@ -3,6 +3,7 @@ package com.aidn5.hypeapp.activities.main_activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -106,7 +107,7 @@ public final class EventsFragment extends BaseFragment {
 			}
 
 			holder.text1.setText(this.context.getString(dataHolder.title));
-			holder.text2.setText(this.context.getString(dataHolder.message, (Object[]) dataHolder.args));
+			holder.text2.setText(Html.fromHtml(this.context.getString(dataHolder.message, (Object[]) dataHolder.args)));
 			holder.time.setText(Utils.createDateOrMessage(this.context, (int) (System.currentTimeMillis() / 1000L) - dataHolder.registerTime));
 
 			return view;

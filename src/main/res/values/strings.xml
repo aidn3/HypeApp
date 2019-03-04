@@ -43,13 +43,13 @@
     <string name="hold_to_make_this_view_default">hold to make this view default</string>
     <string name="friends">Friends</string>
     <string name="friendsEventIgnChangedTitle">Ign\'s Friends changed</string>
-    <string name="friendsEventIgnChangedMessage">%s has changed their Ign to %s!</string>
+    <string name="friendsEventIgnChangedMessage">&lt;b&gt;%s&lt;/b&gt; has changed their Ign to &lt;b&gt;%s&lt;/b&gt;!</string>
     <string name="guildEventKickedTitle">Guild</string>
     <string name="guildEventKickedMessage">You have been kicked from the guild :(</string>
     <string name="guildEventMemberLeavesTitle">Guild</string>
-    <string name="guildEventMemberLeavesMessage">%s has left the guild</string>
+    <string name="guildEventMemberLeavesMessage">&lt;b&gt;%s&lt;/b&gt; has left the guild</string>
     <string name="guildEventMemberJoinsTitle">Guild</string>
-    <string name="guildEventMemberJoinsMessage">%s has joined the guild</string>
+    <string name="guildEventMemberJoinsMessage">&lt;b&gt;%s&lt;/b&gt; has joined the guild</string>
     <string name="appEventAnnouncementTitle">Announcement!</string>
     <string name="stringContainer">%s</string>
     <string name="guildsEvents">Guilds Events</string>
