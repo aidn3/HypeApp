@@ -59,6 +59,7 @@ public class G extends Application {
 			return db != null ? db : (db = DBFactory.open(getApplicationContext()));
 		} catch (SnappydbException e) {
 			e.printStackTrace();
+			ACRA.getErrorReporter().handleException(e);
 			return db;
 		}
 	}
