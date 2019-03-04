@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.aidn5.hypeapp.G;
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.UIManager;
+import com.aidn5.hypeapp.Utils;
 import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 
@@ -85,7 +85,7 @@ public class BestFriendsList extends BaseActivity {
 				Toast.makeText(this.activity, this.showMessageOnFinish, Toast.LENGTH_LONG).show();
 
 			if (this.errorDialog != null) {
-				UIManager.createErrorLogDialog(activity, errorDialog, stacktrace, sendToDev);
+				Utils.createErrorLogDialog(activity, errorDialog, stacktrace, sendToDev);
 			}
 
 			if (onSuccess) initialize();
