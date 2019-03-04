@@ -123,6 +123,7 @@ public final class ServicesProvider extends Service {
 						// We don't need to annoy the user
 						//TODO: [Feature] add notification on error occurs
 						e.printStackTrace();
+						ACRA.getErrorReporter().handleSilentException(e);
 					}
 				}
 			}, 1, 60000); //try to sync Every minute
@@ -140,8 +141,8 @@ public final class ServicesProvider extends Service {
 					Log.v(this.getClass().getSimpleName(), "Syncing: " + notifierFactory.getClass().getSimpleName());
 					notifierFactory.doLoop(eventsSaver);
 				} catch (Exception e) {
-					ACRA.getErrorReporter().handleSilentException(e);
 					e.printStackTrace();
+					ACRA.getErrorReporter().handleSilentException(e);
 				}
 			}
 
