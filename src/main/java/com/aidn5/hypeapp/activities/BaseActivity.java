@@ -12,7 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.aidn5.hypeapp.ServicesProvider;
 
 @SuppressLint("Registered")
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements ServiceConnection {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -21,22 +21,20 @@ public class BaseActivity extends AppCompatActivity {
 	}
 
 	protected final void bindToLocalService() {
-		ServiceConnection mConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName className, IBinder service) {
-				ServicesProvider.LocalBinder binder = (ServicesProvider.LocalBinder) service;
-				onServiceConnected_(binder.getService());
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName componentName) {
-				//No need to inform about disconnect
-				// since it will never happen and we only need one-way method #onServiceConnected_
-			}
-		};
-
 		Intent intent = new Intent(this, ServicesProvider.class);
-		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+		bindService(intent, this, Context.BIND_IMPORTANT);
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		ServicesProvider.LocalBinder binder = (ServicesProvider.LocalBinder) service;
+		onServiceConnected_(binder.getService());
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName componentName) {
+		// No need to inform about disconnect
+		// since it will never happen and we only need one-way method #onServiceConnected_
 	}
 
 	protected void onServiceConnected_(ServicesProvider servicesProvider) {
