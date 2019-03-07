@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -35,13 +34,10 @@ public final class IgnProvider {
 	private final SQLiteDatabase db;
 
 	public IgnProvider(Context context) {
-		File file = new File(context.getFilesDir().getAbsolutePath() + "/databases/");
-
-		if (!file.exists()) //noinspection ResultOfMethodCallIgnored
-			file.mkdir();
-
-		String path = file.getAbsolutePath() + this.getClass().getSimpleName();
-		this.db = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.CREATE_IF_NECESSARY);
+		this.db = SQLiteDatabase.openDatabase(
+				context.getDatabasePath(this.getClass().getSimpleName()).getAbsolutePath(),
+				null,
+				SQLiteDatabase.CREATE_IF_NECESSARY);
 
 		this.db.execSQL(QUERY_CREATE_TABLE);
 
