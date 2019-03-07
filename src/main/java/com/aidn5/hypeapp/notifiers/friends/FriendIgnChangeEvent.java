@@ -10,10 +10,10 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
-import com.snappydb.DB;
 
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -23,22 +23,22 @@ import java.util.concurrent.TimeUnit;
 public final class FriendIgnChangeEvent extends NotifierFactory {
 	private static final int CHUNK_SIZE = 5; //How many players does every thread has to work with
 
-	public FriendIgnChangeEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public FriendIgnChangeEvent(@NonNull Context context) {
+		super(context);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void doLoop(@NonNull EventsSaver eventsSaver) {
+	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
 		boolean showNotification = settings.getBoolean(Settings.showNotificationOnFriendIgnChanged.name(), true);
 
 		// We don't need to look up the usernames anymore,
 		// since we won't notify the user anyways
 		if (!showNotification) return;
 
-		String[] playersUUID = getPlayersUUID();
+		String[] playersUUID = getPlayersUUID(settings);
 		if (playersUUID == null) return; //No-data -> nothing to do -> return
 
 		// Split the data to make the look up faster by multi-threading
@@ -57,7 +57,7 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 			executor.execute(new Runnable() {
 				@Override
 				public void run() {
-					lookUpUUIDs(eventsSaver, chunk);
+					lookUpUUIDs(eventsSaver, ignProvider, chunk);
 				}
 			});
 		}
@@ -79,7 +79,7 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 		return R.string.showNotificationOnFriendIgnChanged_title;
 	}
 
-	private void lookUpUUIDs(@NonNull EventsSaver eventsSaver, @NonNull String[] playersUUID) {
+	private void lookUpUUIDs(@NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull String[] playersUUID) {
 		for (String uuid : playersUUID) {
 			ignProvider.cleanDB(); // clean the database to make the look-up faster
 
@@ -165,9 +165,9 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 	 * @return Up-To-Date friends list associated by their UUIDs
 	 */
 	@Nullable
-	private String[] getPlayersUUID() {
+	private String[] getPlayersUUID(SharedPreferences sp) {
 		//TODO: [Feature] FriendIgnChangeEvent#getPlayersUUID: add include exclude to settings
-		HypixelReplay hypixelReplay = new FriendsRequest(context).getFriendsByUserUUID(settings);
+		HypixelReplay hypixelReplay = new FriendsRequest(context).getFriendsByUserUUID(sp);
 		return (String[]) hypixelReplay.value; // Either null or String[]
 	}
 }

@@ -9,11 +9,10 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
-import com.snappydb.DB;
-import com.snappydb.SnappydbException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,24 +25,24 @@ import java.util.List;
 public final class FriendRemovalEvent extends NotifierFactory {
 	private static final String SETTINGS_FRIENDS_UUID = FriendRemovalEvent.class.getSimpleName() + "_FriendsUUID";
 
-	public FriendRemovalEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public FriendRemovalEvent(@NonNull Context context) {
+		super(context);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void doLoop(@NonNull EventsSaver eventsSaver) {
-		String[] friends = getFriendsUUIDsFromNet();
+	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+		String[] friends = getFriendsUUIDsFromNet(settings);
 		if (friends == null) return; //Cant load the list -> nothing to update -> return
 
 		String[] cachedFriends = null;
 		if (settings.getBoolean(Settings.showNotificationOnFriendRemoved.name(), false)) {
-			cachedFriends = getFriendsUUIDsFromCache();//Load the cache before overwriting
+			cachedFriends = getFriendsUUIDsFromCache(dm);//Load the cache before overwriting
 		}
 
-		cacheFriendsUUIDs(friends);
+		cacheFriendsUUIDs(dm, friends);
 
 		if (!settings.getBoolean(Settings.showNotificationOnFriendRemoved.name(), false)) return;
 
@@ -51,7 +50,7 @@ public final class FriendRemovalEvent extends NotifierFactory {
 			return; //The user will notice it -> no need to compare/show notifications
 		if (cachedFriends == null) return;//The first time it runs will have no cache -> return
 
-		compareFriendsListsAndSendNotification(eventsSaver, friends, cachedFriends);
+		compareFriendsListsAndSendNotification(eventsSaver, ignProvider, friends, cachedFriends);
 	}
 
 	@Override
@@ -62,17 +61,17 @@ public final class FriendRemovalEvent extends NotifierFactory {
 	/**
 	 * Compare the two lists, find the missing object from the upToDateList and send notifications
 	 * <p>
-	 * After running {@link #doLoop(EventsSaver)}
+	 * After running {@link #doLoop(DataManager, EventsSaver, IgnProvider, SharedPreferences)}
 	 * and granting the permission to send notifications
-	 * {@link #doLoop(EventsSaver)} calls at the end
+	 * {@link #doLoop(DataManager, EventsSaver, IgnProvider, SharedPreferences)} calls at the end
 	 * to compare the lists and show changes as notifications.
 	 * <p>
-	 * This method has been created to divide {@link #doLoop(EventsSaver)} to ease the readability
+	 * This method has been created to divide {@link #doLoop(DataManager, EventsSaver, IgnProvider, SharedPreferences)} to ease the readability
 	 *
 	 * @param upToDateList the retrieved list from the server
 	 * @param cachedList   the saved list
 	 */
-	private void compareFriendsListsAndSendNotification(@NonNull EventsSaver eventsSaver, @NonNull String[] upToDateList, @NonNull String[] cachedList) {
+	private void compareFriendsListsAndSendNotification(@NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull String[] upToDateList, @NonNull String[] cachedList) {
 		List<String> friendsFromNet = Arrays.asList(upToDateList);//Convert to list. so it supports #contains
 
 		for (String cachedFriend : cachedList) {
@@ -103,8 +102,8 @@ public final class FriendRemovalEvent extends NotifierFactory {
 	 * @return Up-To-Date friends list associated by their UUIDs
 	 */
 	@Nullable
-	private String[] getFriendsUUIDsFromNet() {
-		HypixelReplay hypixelReplay = new FriendsRequest(context).getFriendsByUserUUID(settings);
+	private String[] getFriendsUUIDsFromNet(SharedPreferences sp) {
+		HypixelReplay hypixelReplay = new FriendsRequest(context).getFriendsByUserUUID(sp);
 		return (String[]) hypixelReplay.value;
 	}
 
@@ -113,14 +112,8 @@ public final class FriendRemovalEvent extends NotifierFactory {
 	 *
 	 * @param friends The friend list, which is retrieved from the server
 	 */
-	private void cacheFriendsUUIDs(@NonNull String[] friends) {
-		synchronized (db) {
-			try {
-				db.put(SETTINGS_FRIENDS_UUID, friends);
-			} catch (SnappydbException e) {
-				e.printStackTrace();
-			}
-		}
+	private void cacheFriendsUUIDs(@NonNull DataManager dm, @NonNull String[] friends) {
+		dm.setFriends(friends);
 	}
 
 	/**
@@ -130,17 +123,8 @@ public final class FriendRemovalEvent extends NotifierFactory {
 	 *
 	 * @return Friends list associated by their UUID
 	 */
-	@Nullable
-	private String[] getFriendsUUIDsFromCache() {
-		synchronized (db) {
-
-			try {
-				return db.getObjectArray(SETTINGS_FRIENDS_UUID, String.class);
-			} catch (SnappydbException e) {
-				e.printStackTrace();
-			}
-
-			return null;
-		}
+	@NonNull
+	private String[] getFriendsUUIDsFromCache(DataManager dm) {
+		return dm.getFriends();
 	}
 }

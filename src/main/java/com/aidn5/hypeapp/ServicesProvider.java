@@ -16,10 +16,10 @@ import com.aidn5.hypeapp.notifiers.NotifierFactory;
 import com.aidn5.hypeapp.notifiers.app.AppAnnouncementsEvent;
 import com.aidn5.hypeapp.notifiers.friends.FriendIgnChangeEvent;
 import com.aidn5.hypeapp.notifiers.friends.FriendRemovalEvent;
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
-import com.snappydb.DB;
 
 import org.acra.ACRA;
 
@@ -59,18 +59,14 @@ public final class ServicesProvider extends Service {
 	}
 
 	private void createNotifiers() {
-		DB db = g.getDB();
-		IgnProvider ignProvider = g.getIgnProvider();
-		SharedPreferences sp = g.getSettings();
+		notifiers.add(new AppAnnouncementsEvent(this));
 
-		notifiers.add(new AppAnnouncementsEvent(this, db, ignProvider, sp));
+		notifiers.add(new ForumsEventsNotifier(this));
 
-		notifiers.add(new ForumsEventsNotifier(this, db, ignProvider, sp));
+		notifiers.add(new FriendRemovalEvent(this));
+		notifiers.add(new FriendIgnChangeEvent(this));
 
-		notifiers.add(new FriendRemovalEvent(this, db, ignProvider, sp));
-		notifiers.add(new FriendIgnChangeEvent(this, db, ignProvider, sp));
-
-		notifiers.add(new GuildEventsNotifier(this, db, ignProvider, sp));
+		notifiers.add(new GuildEventsNotifier(this));
 	}
 
 	@Override
@@ -135,11 +131,14 @@ public final class ServicesProvider extends Service {
 			Log.v(this.getClass().getSimpleName(), "syncing...");
 
 			EventsSaver eventsSaver = g.getEventsSaver();
+			DataManager dm = g.getDm();
+			IgnProvider ignProvider = g.getIgnProvider();
+			SharedPreferences sp = g.getSettings();
 
 			for (NotifierFactory notifierFactory : notifiers) {
 				try {//We don't need to let services interfere with each other
 					Log.v(this.getClass().getSimpleName(), "Syncing: " + notifierFactory.getClass().getSimpleName());
-					notifierFactory.doLoop(eventsSaver);
+					notifierFactory.doLoop(dm, eventsSaver, ignProvider, sp);
 				} catch (Exception e) {
 					e.printStackTrace();
 					ACRA.getErrorReporter().handleSilentException(e);

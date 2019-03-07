@@ -8,11 +8,10 @@ import android.support.annotation.Nullable;
 import com.aidn5.hypeapp.BuildConfig;
 import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
-import com.snappydb.DB;
-import com.snappydb.SnappydbException;
 
 import org.acra.ACRA;
 import org.json.JSONArray;
@@ -41,16 +40,16 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 	private static final String HANDLER_VERSION = "1.0";
 	private static final String URL_LINK = "https://aidn55.000webhostapp.com/anouncements.php?id=" + BuildConfig.APPLICATION_ID + "&version=" + HANDLER_VERSION;
 
-	public AppAnnouncementsEvent(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public AppAnnouncementsEvent(@NonNull Context context) {
+		super(context);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void doLoop(@NonNull EventsSaver eventsSaver) {
-		String data = fetchData();
+	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
+		String data = fetchData(dm);
 		if (data == null) return; // no data -> nothing to show/update -> return
 
 		boolean showNotification = settings.getBoolean(Settings.showNotificationOnDeveloperAnnouncement.name(), true);
@@ -90,10 +89,7 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 			e.printStackTrace();
 			ACRA.getErrorReporter().handleSilentException(e);
 		} finally {
-			try {
-				db.putLong(SETTINGS_LAST_REQUEST, System.currentTimeMillis() / 1000L);
-			} catch (SnappydbException ignored) {
-			}
+			dm.put(SETTINGS_LAST_REQUEST, System.currentTimeMillis() / 1000L);
 		}
 	}
 
@@ -112,11 +108,11 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 	 * @return the announcements
 	 */
 	@Nullable
-	private String fetchData() {
+	private String fetchData(DataManager dm) {
 		try {
-			String url = URL_LINK + "?lastRequest=" + db.getLong(SETTINGS_LAST_REQUEST);
+			String url = URL_LINK + "?lastRequest=" + dm.get(SETTINGS_LAST_REQUEST, int.class, 0);
 			return netRequest(url);
-		} catch (SnappydbException | IOException ignored) {
+		} catch (IOException ignored) {
 			return null;
 		}
 	}

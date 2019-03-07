@@ -5,10 +5,10 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.aidn5.hypeapp.R;
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.NotificationFactory;
-import com.snappydb.DB;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,17 +18,10 @@ import java.net.URLConnection;
 
 public abstract class NotifierFactory {
 	protected final Context context;
-	protected final IgnProvider ignProvider;
 	protected final NotificationFactory notificationFactory;
-	protected final DB db;
 
-	protected final SharedPreferences settings;
-
-	protected NotifierFactory(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		this.ignProvider = ignProvider;
-		this.settings = settings;
+	protected NotifierFactory(@NonNull Context context) {
 		this.context = context;
-		this.db = db;
 
 		this.notificationFactory = new NotificationFactory(
 				context,
@@ -78,7 +71,7 @@ public abstract class NotifierFactory {
 	 *
 	 * @param eventsSaver Instance to save the events
 	 */
-	public abstract void doLoop(@NonNull EventsSaver eventsSaver);
+	public abstract void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings);
 
 	/**
 	 * Resource refers to the title of the event in {@link R.string}

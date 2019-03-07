@@ -5,12 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.evernote.android.job.JobRequest;
-import com.snappydb.DB;
-import com.snappydb.DBFactory;
-import com.snappydb.SnappydbException;
 
 import org.acra.ACRA;
 import org.acra.annotation.AcraCore;
@@ -40,7 +38,7 @@ public class G extends Application {
 	private IgnProvider ignProvider;
 	private EventsSaver eventsSaver;
 	private SharedPreferences settings;
-	private DB db = null;
+	private DataManager dm = null;
 
 	public final IgnProvider getIgnProvider() {
 		return ignProvider != null ? ignProvider : (ignProvider = new IgnProvider(getApplicationContext()));
@@ -54,14 +52,8 @@ public class G extends Application {
 		return eventsSaver != null ? eventsSaver : (eventsSaver = new EventsSaver(getApplicationContext()));
 	}
 
-	public final DB getDB() {
-		try {
-			return db != null ? db : (db = DBFactory.open(getApplicationContext()));
-		} catch (SnappydbException e) {
-			e.printStackTrace();
-			ACRA.getErrorReporter().handleException(e);
-			return db;
-		}
+	public final DataManager getDm() {
+		return dm != null ? dm : (dm = new DataManager(getApplicationContext()));
 	}
 
 	@Override

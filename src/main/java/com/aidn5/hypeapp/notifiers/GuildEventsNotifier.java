@@ -9,28 +9,25 @@ import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.hypixelapi.GuildRequest;
 import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.hypixelapi.models.Guild;
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
-import com.snappydb.DB;
-import com.snappydb.SnappydbException;
 
 import java.util.Arrays;
 import java.util.List;
 
 public final class GuildEventsNotifier extends NotifierFactory {
-	private static final String SETTINGS_IS_IN_GUILD = GuildEventsNotifier.class.getSimpleName() + "_IsInGuild";
-	private static final String SETTINGS_GUILD_MEMBERS = GuildEventsNotifier.class.getSimpleName() + "_GuildMembers";
 
-	public GuildEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public GuildEventsNotifier(@NonNull Context context) {
+		super(context);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void doLoop(@NonNull EventsSaver eventsSaver) {
+	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
 		boolean guildMemberJoins = settings.getBoolean(Settings.showNotificationOnGuildMemberJoins.name(), false);
 		boolean guildMemberLeaves = settings.getBoolean(Settings.showNotificationOnGuildMemberLeaves.name(), false);
 		boolean guildSelfLeaves = settings.getBoolean(Settings.showNotificationOnGuildSelfLeaves.name(), false);
@@ -47,21 +44,21 @@ public final class GuildEventsNotifier extends NotifierFactory {
 		Guild guild = (Guild) hypixelReplay.value;
 		boolean isInGuild = (guild != null);
 
-		isUserKickedEvent(eventsSaver, isInGuild, guildSelfLeaves, isTheUserOnline);
+		isUserKickedEvent(eventsSaver, dm, isInGuild, guildSelfLeaves, isTheUserOnline);
 
 		if (!isInGuild) {
 			//Let's remove all the members from the list to not conflict them with another guild
-			cacheGuildMembers(new String[0]);
+			cacheGuildMembers(dm, new String[0]);
 			return;
 		}
 
-		String[] cachedMembers = getCachedGuildMembers();
+		String[] cachedMembers = getCachedGuildMembers(dm);
 		String[] members = guild.getUUIDMembers();
 
 		if (cachedMembers != null)
-			isMemberLeftJoinedEvent(eventsSaver, members, cachedMembers, guildMemberJoins, guildMemberLeaves, isTheUserOnline);
+			isMemberLeftJoinedEvent(eventsSaver, ignProvider, members, cachedMembers, guildMemberJoins, guildMemberLeaves, isTheUserOnline);
 
-		cacheGuildMembers(members);
+		cacheGuildMembers(dm, members);
 	}
 
 	@Override
@@ -78,32 +75,27 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 * @param guildSelfLeaves is showing notifications granted?
 	 * @param isTheUserOnline is the user of this app is on hypixel network?
 	 */
-	private void isUserKickedEvent(@NonNull EventsSaver eventsSaver, boolean inGuild, boolean guildSelfLeaves, boolean isTheUserOnline) {
-		try {
-			if (!isTheUserOnline && guildSelfLeaves) {
-				boolean isInGuildCache = db.getBoolean(SETTINGS_IS_IN_GUILD);
-				if (isInGuildCache != inGuild) {
-					notificationFactory.notify(
-							context.getString(R.string.guildEventKickedTitle),
-							context.getString(R.string.guildEventKickedMessage)
-					);
+	private void isUserKickedEvent(@NonNull EventsSaver eventsSaver, @NonNull DataManager dm, boolean inGuild, boolean guildSelfLeaves, boolean isTheUserOnline) {
 
-					EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
+		if (!isTheUserOnline && guildSelfLeaves) {
+			boolean isInGuildCache = dm.getIsInGuild();
+			if (isInGuildCache != inGuild) {
+				notificationFactory.notify(
+						context.getString(R.string.guildEventKickedTitle),
+						context.getString(R.string.guildEventKickedMessage)
+				);
 
-					dataHolder.provider = getName();
-					dataHolder.title = R.string.guildEventKickedTitle;
-					dataHolder.message = R.string.guildEventKickedMessage;
+				EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
-					eventsSaver.register(dataHolder);
-				}
-			}
-		} catch (SnappydbException ignored) {
-		} finally {
-			try {//Set whether is the user inGuild
-				db.put(SETTINGS_IS_IN_GUILD, inGuild);
-			} catch (SnappydbException ignored) {
+				dataHolder.provider = getName();
+				dataHolder.title = R.string.guildEventKickedTitle;
+				dataHolder.message = R.string.guildEventKickedMessage;
+
+				eventsSaver.register(dataHolder);
 			}
 		}
+
+		dm.setIsInGuild(inGuild);
 	}
 
 	/**
@@ -123,7 +115,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 * @param guildMemberLeaves is showing notifications granted for leaving the guild event?
 	 * @param isTheUserOnline   is the user of this app is on hypixel network?
 	 */
-	private void isMemberLeftJoinedEvent(@NonNull EventsSaver eventsSaver, @NonNull String[] members, @NonNull String[] cachedMembers, boolean guildMemberJoins, boolean guildMemberLeaves, boolean isTheUserOnline) {
+	private void isMemberLeftJoinedEvent(@NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull String[] members, @NonNull String[] cachedMembers, boolean guildMemberJoins, boolean guildMemberLeaves, boolean isTheUserOnline) {
 		if ((!guildMemberJoins && !guildMemberLeaves) || isTheUserOnline)
 			return; //No need to create objects, compare then show notifications
 
@@ -185,11 +177,8 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 *
 	 * @param UUIDs guild's members UUIDs
 	 */
-	private void cacheGuildMembers(@NonNull String[] UUIDs) {
-		try {
-			db.put(SETTINGS_GUILD_MEMBERS, UUIDs);
-		} catch (SnappydbException ignored) {
-		}
+	private void cacheGuildMembers(@NonNull DataManager dm, @NonNull String[] UUIDs) {
+		dm.setGuildMembers(UUIDs);
 	}
 
 	/**
@@ -198,11 +187,7 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 * @return guild's members associated by their UUIDs
 	 */
 	@Nullable
-	private String[] getCachedGuildMembers() {
-		try {
-			return db.getObjectArray(SETTINGS_GUILD_MEMBERS, String.class);
-		} catch (SnappydbException ignored) {
-			return null;
-		}
+	private String[] getCachedGuildMembers(DataManager dm) {
+		return dm.getGuildMembers();
 	}
 }

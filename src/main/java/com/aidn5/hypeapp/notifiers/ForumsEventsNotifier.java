@@ -5,17 +5,17 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.aidn5.hypeapp.R;
+import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
-import com.snappydb.DB;
 
 public final class ForumsEventsNotifier extends NotifierFactory {
-	public ForumsEventsNotifier(@NonNull Context context, @NonNull DB db, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		super(context, db, ignProvider, settings);
+	public ForumsEventsNotifier(@NonNull Context context) {
+		super(context);
 	}
 
 	@Override
-	public final void doLoop(@NonNull EventsSaver eventsSaver) {
+	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
 		//TODO: [Auto-Gen] Add feature AppEventsNotifier
 	}
 
