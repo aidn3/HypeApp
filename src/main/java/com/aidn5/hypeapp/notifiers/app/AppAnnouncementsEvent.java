@@ -12,6 +12,7 @@ import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
+import com.snappydb.SnappydbException;
 
 import org.acra.ACRA;
 import org.json.JSONArray;
@@ -110,10 +111,17 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 	@Nullable
 	private String fetchData(DataManager dm) {
 		try {
-			String url = URL_LINK + "?lastRequest=" + dm.get(SETTINGS_LAST_REQUEST, int.class, 0);
+			if (!dm.exists(SETTINGS_LAST_REQUEST))
+				dm.put(SETTINGS_LAST_REQUEST, System.currentTimeMillis() / 1000L);
+
+			String url = URL_LINK + "?lastRequest=" + dm.get(SETTINGS_LAST_REQUEST, int.class);
 			return netRequest(url);
 		} catch (IOException ignored) {
-			return null;
+		} catch (SnappydbException e) {
+			e.printStackTrace();
+			ACRA.getErrorReporter().handleException(e);
 		}
+
+		return null;
 	}
 }

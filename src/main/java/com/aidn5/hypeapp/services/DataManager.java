@@ -11,6 +11,7 @@ import com.snappydb.SnappydbException;
 import org.acra.ACRA;
 
 import java.io.Serializable;
+import java.util.NoSuchElementException;
 
 /**
  * Data Provider provides data with ease access.
@@ -40,14 +41,8 @@ public final class DataManager {
 		this.db = db;
 	}
 
-	public synchronized <T extends Serializable> T get(@NonNull String key, @NonNull Class<T> className, @Nullable T defaultValue) {
-		try {
-			return db.get(key, className);
-		} catch (SnappydbException e) {
-			e.printStackTrace();
-			ACRA.getErrorReporter().handleException(e);
-		}
-		return defaultValue;
+	public synchronized <T extends Serializable> T get(@NonNull String key, @NonNull Class<T> className) throws SnappydbException {
+		return db.get(key, className);
 	}
 
 	public synchronized boolean put(String key, Serializable serializable) {
@@ -61,11 +56,19 @@ public final class DataManager {
 		}
 	}
 
+	public synchronized boolean exists(String key) throws SnappydbException {
+		return this.db.exists(key);
+	}
+
 	/**
-	 * @return Array with the data. or an empty array if not found
+	 * @return Array with the data or null if not found
 	 */
 	public String[] getBestFriends() {
-		return get(BEST_FRIENDS_UUID, String[].class, new String[0]);
+		try {
+			return this.db.getObjectArray(BEST_FRIENDS_UUID, String.class);
+		} catch (SnappydbException e) {
+			return new String[0];
+		}
 	}
 
 	public boolean setBestFriends(@NonNull String[] bestFriends) {
@@ -73,11 +76,15 @@ public final class DataManager {
 	}
 
 	/**
-	 * @return Array with the data. or an empty array if not found
+	 * @return Array with the data or null if not found
 	 */
-	@NonNull
+	@Nullable
 	public String[] getFriends() {
-		return get(FRIENDS_UUID, String[].class, new String[0]);
+		try {
+			return this.db.getObjectArray(FRIENDS_UUID, String.class);
+		} catch (SnappydbException e) {
+			return null;
+		}
 	}
 
 	public boolean setFriends(@NonNull String[] bestFriends) {
@@ -85,11 +92,15 @@ public final class DataManager {
 	}
 
 	/**
-	 * @return Array with the data. or an empty array if not found
+	 * @return Array with the data or null if not found
 	 */
-	@NonNull
+	@Nullable
 	public String[] getGuildMembers() {
-		return get(GUILD_MEMBERS_UUID, String[].class, new String[0]);
+		try {
+			return this.db.getObjectArray(GUILD_MEMBERS_UUID, String.class);
+		} catch (SnappydbException e) {
+			return null;
+		}
 	}
 
 	public boolean setGuildMembers(@NonNull String[] bestFriends) {
@@ -107,8 +118,11 @@ public final class DataManager {
 	 * Indicates whether the user has/is in guild on hypixel network
 	 *
 	 * @return false by default if not found
+	 * @throws SnappydbException if not found/or something went wrong
 	 */
-	public boolean getIsInGuild() {
-		return get(IS_IN_GUILD, boolean.class, false);
+	public boolean getIsInGuild() throws SnappydbException, NoSuchElementException {
+		if (!exists(IS_IN_GUILD)) throw new NoSuchElementException();
+
+		return get(IS_IN_GUILD, boolean.class);
 	}
 }

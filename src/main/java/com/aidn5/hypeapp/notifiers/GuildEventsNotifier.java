@@ -13,9 +13,13 @@ import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
+import com.snappydb.SnappydbException;
+
+import org.acra.ACRA;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public final class GuildEventsNotifier extends NotifierFactory {
 
@@ -76,23 +80,28 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 * @param isTheUserOnline is the user of this app is on hypixel network?
 	 */
 	private void isUserKickedEvent(@NonNull EventsSaver eventsSaver, @NonNull DataManager dm, boolean inGuild, boolean guildSelfLeaves, boolean isTheUserOnline) {
+		try {
+			if (!isTheUserOnline && guildSelfLeaves) {
+				boolean isInGuildCache = dm.getIsInGuild();
+				if (isInGuildCache && !inGuild) {
+					notificationFactory.notify(
+							context.getString(R.string.guildEventKickedTitle),
+							context.getString(R.string.guildEventKickedMessage)
+					);
 
-		if (!isTheUserOnline && guildSelfLeaves) {
-			boolean isInGuildCache = dm.getIsInGuild();
-			if (isInGuildCache != inGuild) {
-				notificationFactory.notify(
-						context.getString(R.string.guildEventKickedTitle),
-						context.getString(R.string.guildEventKickedMessage)
-				);
+					EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
 
-				EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
+					dataHolder.provider = getName();
+					dataHolder.title = R.string.guildEventKickedTitle;
+					dataHolder.message = R.string.guildEventKickedMessage;
 
-				dataHolder.provider = getName();
-				dataHolder.title = R.string.guildEventKickedTitle;
-				dataHolder.message = R.string.guildEventKickedMessage;
-
-				eventsSaver.register(dataHolder);
+					eventsSaver.register(dataHolder);
+				}
 			}
+		} catch (SnappydbException e) {
+			ACRA.getErrorReporter().handleException(e);
+		} catch (NoSuchElementException ignored) {
+			//When no data found
 		}
 
 		dm.setIsInGuild(inGuild);

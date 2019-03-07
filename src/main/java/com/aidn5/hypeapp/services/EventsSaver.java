@@ -185,6 +185,8 @@ public final class EventsSaver {
 
 		@NonNull
 		private String argsToString() {
+			if (args == null || args.length == 0) return "";
+
 			StringBuilder builder = new StringBuilder();
 			for (String s : args) {
 				builder.append(s).append("\r\n");
