@@ -22,30 +22,57 @@
  * SOFTWARE.
  */
 
-
-package com.aidn5.hypeapp.notifiers;
+package com.aidn5.hypeapp.notifiers.friends;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import com.aidn5.hypeapp.R;
+import com.aidn5.hypeapp.notifiers.NotifierFactory;
 import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 
-public final class ForumsEventsNotifier extends NotifierFactory {
-	public ForumsEventsNotifier(@NonNull Context context) {
+public class BestFriendJoin extends NotifierFactory {
+	protected BestFriendJoin(@NonNull Context context) {
 		super(context);
 	}
 
 	@Override
 	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		//TODO: [Auto-Gen] Add feature AppEventsNotifier
+		/*boolean showNotification = settings.getBoolean(Settings.showNotificationOnFriendJoined.name(), true);
+
+		if (!showNotification) return;
+
+		String[] bestFriends = dm.getBestFriends();
+		if (bestFriends == null || bestFriends.length == 0) return; //no-data -> nothing to process
+
+		String[][] playersUUIDChunk = splitArray(playersUUID, CHUNK_SIZE);
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 5, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(playersUUIDChunk.length + 1));
+
+		for (String[] chunk : playersUUIDChunk) {
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					lookUpUUIDs(eventsSaver, ignProvider, chunk);
+				}
+			});
+		}
+
+		while (executor.getTaskCount() != executor.getCompletedTaskCount()) {
+			Log.v(getClass().getSimpleName(), "count=" + executor.getTaskCount() + "," + executor.getCompletedTaskCount());
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException ignored) {
+				Thread.currentThread().interrupt();
+			}
+		}
+
+		executor.shutdown();*/
 	}
 
 	@Override
 	public int getName() {
-		return R.string.showNotificationOnForumsNotifications_title;
+		return 0;
 	}
 }
