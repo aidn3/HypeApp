@@ -70,8 +70,9 @@ public abstract class NotifierFactory {
 	 * {@link com.aidn5.hypeapp.ServicesProvider.SyncProvider#doLoop(boolean)}
 	 *
 	 * @param eventsSaver Instance to save the events
+	 * @throws Exception on any error occurs
 	 */
-	public abstract void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings);
+	public abstract void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) throws Exception;
 
 	/**
 	 * Resource refers to the title of the event in {@link R.string}

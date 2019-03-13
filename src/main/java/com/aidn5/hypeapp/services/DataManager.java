@@ -25,20 +25,12 @@ public final class DataManager {
 	private static final String FRIENDS_UUID = "friendsUuid";
 	private static final String GUILD_MEMBERS_UUID = "guildMembersUuid";
 	private static final String IS_IN_GUILD = "isInGuild";
-
-	private final DB db;
+	private final String dbPath;
+	private DB db;
 
 	public DataManager(@NonNull Context context) {
-		DB db;
-		try {
-			db = DBFactory.open(context);
-		} catch (SnappydbException e) {
-			e.printStackTrace();
-			ACRA.getErrorReporter().handleException(e);
-			db = null;
-		}
-
-		this.db = db;
+		this.dbPath = context.getFilesDir().getAbsolutePath();
+		openDB();
 	}
 
 	public synchronized <T extends Serializable> T get(@NonNull String key, @NonNull Class<T> className) throws SnappydbException {
@@ -58,6 +50,24 @@ public final class DataManager {
 
 	public synchronized boolean exists(String key) throws SnappydbException {
 		return this.db.exists(key);
+	}
+
+	public synchronized void remove(String key) {
+		try {
+			this.db.del(key);
+		} catch (SnappydbException ignored) {
+		}
+	}
+
+	public synchronized boolean removeAll() {
+		try {
+			this.db.destroy();
+			openDB();
+		} catch (SnappydbException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -124,5 +134,15 @@ public final class DataManager {
 		if (!exists(IS_IN_GUILD)) throw new NoSuchElementException();
 
 		return get(IS_IN_GUILD, boolean.class);
+	}
+
+	private void openDB() {
+		try {
+			db = DBFactory.open(dbPath);
+		} catch (SnappydbException e) {
+			e.printStackTrace();
+			ACRA.getErrorReporter().handleException(e);
+			db = null;
+		}
 	}
 }

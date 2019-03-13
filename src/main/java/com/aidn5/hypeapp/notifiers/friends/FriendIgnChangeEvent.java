@@ -41,6 +41,10 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 		String[] playersUUID = getPlayersUUID(settings);
 		if (playersUUID == null) return; //No-data -> nothing to do -> return
 
+		startLoad(eventsSaver, ignProvider, playersUUID);
+	}
+
+	private void startLoad(@NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull String[] playersUUID) {
 		// Split the data to make the look up faster by multi-threading
 		// requesting data from the internet by speed of 5 kb/s (2 requests per second)
 		// is too slow and takes lot of time for array bigger than 50

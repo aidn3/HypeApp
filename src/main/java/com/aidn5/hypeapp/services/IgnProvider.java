@@ -161,6 +161,7 @@ public final class IgnProvider {
 		this.db.execSQL(QUERY_CREATE_TABLE);
 
 		this.db.setTransactionSuccessful();
+		this.db.endTransaction();
 	}
 
 	/**

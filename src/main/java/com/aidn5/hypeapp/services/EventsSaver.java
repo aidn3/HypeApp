@@ -8,8 +8,13 @@ import android.support.annotation.NonNull;
 
 import com.aidn5.hypeapp.BuildConfig;
 
+import org.acra.ACRA;
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -145,6 +150,7 @@ public final class EventsSaver {
 		createTable();
 
 		this.sql.setTransactionSuccessful();
+		this.sql.endTransaction();
 	}
 
 	private void createTable() {
@@ -185,17 +191,28 @@ public final class EventsSaver {
 
 		@NonNull
 		private String argsToString() {
-			if (args == null || args.length == 0) return "";
+			if (args == null) return "";
 
-			StringBuilder builder = new StringBuilder();
-			for (String s : args) {
-				builder.append(s).append("\r\n");
-			}
-			return builder.toString();
+			return new JSONArray(Arrays.asList(args)).toString();
 		}
 
 		private void stringToArgs(@NonNull String args) {
-			this.args = args.split("\r\n");
+			if (args.isEmpty()) {
+				this.args = null;
+				return;
+			}
+			try {
+				JSONArray jsonArray = new JSONArray(args);
+				this.args = new String[jsonArray.length()];
+				for (int i = 0; i < jsonArray.length(); i++) {
+					String string = jsonArray.getString(i);
+					this.args[i] = (string == null) ? "" : string;
+				}
+			} catch (JSONException e) {
+				// never gonna happen ! since its gotten from #argsToString()
+				e.printStackTrace();
+				ACRA.getErrorReporter().handleException(e);
+			}
 		}
 	}
 }

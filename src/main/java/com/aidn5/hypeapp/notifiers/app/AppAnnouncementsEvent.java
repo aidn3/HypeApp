@@ -12,9 +12,7 @@ import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
-import com.snappydb.SnappydbException;
 
-import org.acra.ACRA;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,49 +47,59 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) {
-		String data = fetchData(dm);
+	public void doLoop(@NonNull DataManager dm, @NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull SharedPreferences settings) throws Exception {
+		String data;
+
+		if (!dm.exists(SETTINGS_LAST_REQUEST)) { // On first run there is not data
+			dm.put(SETTINGS_LAST_REQUEST, System.currentTimeMillis() / 1000L);
+			data = fetchData(0);
+		} else {
+			data = fetchData(dm.get(SETTINGS_LAST_REQUEST, int.class));
+		}
+
 		if (data == null) return; // no data -> nothing to show/update -> return
 
 		boolean showNotification = settings.getBoolean(Settings.showNotificationOnDeveloperAnnouncement.name(), true);
-		try {
-			JSONArray announcements = new JSONArray(data);
-			for (int i = 0; i < announcements.length(); i++) {
-				try {
-					JSONObject announce = announcements.getJSONObject(i);
 
-					// If a notification is REALLY important, then show it
-					if (showNotification || announce.getBoolean("isImportant")) {
-						String message = announce.getString("message");
+		doAnnouncements(eventsSaver, showNotification, data);
 
-						notificationFactory.notify(
-								context.getString(R.string.appEventAnnouncementTitle),
-								message
-						);
+		// Save the current time to fetch the next data up this time
+		dm.put(SETTINGS_LAST_REQUEST, System.currentTimeMillis() / 1000L);
+	}
 
-						EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
+	/**
+	 * Loop through the announcements, save them and show notification when necessary
+	 *
+	 * @param eventsSaver      the given object to save the events
+	 * @param showNotification opt to show or not show the notification
+	 * @param data             the data to parse with {@link JSONArray}
+	 */
+	private void doAnnouncements(@NonNull EventsSaver eventsSaver, boolean showNotification, @NonNull String data) throws JSONException {
+		JSONArray announcements = new JSONArray(data);
+		for (int i = 0; i < announcements.length(); i++) {
 
-						dataHolder.provider = getName();
-						dataHolder.title = R.string.appEventAnnouncementTitle;
-						dataHolder.message = R.string.stringContainer;
-						dataHolder.args = new String[]{message};
+			JSONObject announce = announcements.getJSONObject(i);
 
-						eventsSaver.register(dataHolder);
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-					ACRA.getErrorReporter().handleSilentException(e);
-				}
+			String message = announce.getString("message");
+
+			// If a notification is REALLY important, then show it
+			if (showNotification || announce.getBoolean("isImportant")) {
+				notificationFactory.notify(
+						context.getString(R.string.appEventAnnouncementTitle),
+						message
+				);
 			}
-		} catch (Exception e) {
-			// This should NEVER happen since the class should match the server.
-			// Throwing exception means there is a conflict between the server and the app
-			// We need to report the error and fix it from the server-side
-			e.printStackTrace();
-			ACRA.getErrorReporter().handleSilentException(e);
-		} finally {
-			dm.put(SETTINGS_LAST_REQUEST, System.currentTimeMillis() / 1000L);
+
+			EventsSaver.DataHolder dataHolder = new EventsSaver.DataHolder();
+
+			dataHolder.provider = getName();
+			dataHolder.title = R.string.appEventAnnouncementTitle;
+			dataHolder.message = R.string.stringContainer;
+			dataHolder.args = new String[]{message};
+
+			eventsSaver.register(dataHolder);
 		}
+
 	}
 
 	@Override
@@ -109,17 +117,12 @@ public final class AppAnnouncementsEvent extends NotifierFactory {
 	 * @return the announcements
 	 */
 	@Nullable
-	private String fetchData(DataManager dm) {
+	private String fetchData(int timeStamp) {
 		try {
-			if (!dm.exists(SETTINGS_LAST_REQUEST))
-				dm.put(SETTINGS_LAST_REQUEST, System.currentTimeMillis() / 1000L);
-
-			String url = URL_LINK + "?lastRequest=" + dm.get(SETTINGS_LAST_REQUEST, int.class);
+			String url = URL_LINK + "?lastRequest=" + timeStamp;
 			return netRequest(url);
-		} catch (IOException ignored) {
-		} catch (SnappydbException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			ACRA.getErrorReporter().handleException(e);
 		}
 
 		return null;

@@ -123,7 +123,7 @@ public final class FriendRemovalEvent extends NotifierFactory {
 	 *
 	 * @return Friends list associated by their UUID
 	 */
-	@NonNull
+	@Nullable
 	private String[] getFriendsUUIDsFromCache(DataManager dm) {
 		return dm.getFriends();
 	}
