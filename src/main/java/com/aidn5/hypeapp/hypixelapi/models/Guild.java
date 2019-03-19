@@ -95,7 +95,7 @@ public final class Guild {
 			// so there is must always be a fallback value
 			if (rank == null) rank = jsonMember;
 
-			guildMember.tag = rank.optString("tag", "");
+			guildMember.tag = rank.isNull("tag") ? "" : rank.optString("tag", "");
 			guildMember.tagColor = jsonGuild.optString("tagColor");
 			guildMember.rankPriority = rank.optInt("priority", 100);
 		}

@@ -156,18 +156,29 @@ public final class GuildFragment extends BaseFragment {
 				holder.head = view.findViewById(R.id.SPL_item_image);
 				holder.text1 = view.findViewById(R.id.SPL_item_text1);
 				holder.text2 = view.findViewById(R.id.SPL_item_text2);
+				holder.tag = view.findViewById(R.id.SPL_item_tag);
 
 				view.setTag(holder);
 			} else {
 				holder = (Holder) view.getTag();
 			}
 
-			//todo: [feature] GuildFragment: Add color to tag/ranks of guildMembers
 			holder.text1.setText(
 					String.format(
 							"[%s] %s",
 							guildMember.rank,
 							(guildMember.username != null) ? guildMember.username : guildMember.uuid));
+
+			if (guildMember.tag != null && !guildMember.tag.isEmpty()) {
+				holder.tag.setVisibility(View.VISIBLE);
+
+				holder.tag.setText(guildMember.tag);
+				holder.tag.setTextColor(ChatColors.GOLD.getSecondaryColor());
+				holder.tag.setBackgroundColor(ChatColors.GOLD.getPrimaryColor());
+			} else {
+				holder.tag.setVisibility(View.GONE);
+			}
+
 
 			this.imageLoader
 					.load("https://crafatar.com/avatars/" + guildMember.uuid + "?overlay&default=MHF_Alex")
@@ -179,6 +190,7 @@ public final class GuildFragment extends BaseFragment {
 
 		private final class Holder {
 			private ImageView head;
+			private TextView tag;
 			private TextView text1;
 			private TextView text2;
 		}
