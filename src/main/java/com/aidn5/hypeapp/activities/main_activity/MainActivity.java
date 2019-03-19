@@ -70,6 +70,7 @@ public class MainActivity extends BaseActivity {
 			}
 		}
 
+
 		TabLayout tabLayout = findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(mViewPager);
 
@@ -79,6 +80,32 @@ public class MainActivity extends BaseActivity {
 		LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) layout.getLayoutParams();
 		layoutParams.weight = 0.3f;
 		layout.setLayoutParams(layoutParams);
+
+
+		// add listener to automatically load the page on being selected
+		mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int i) {
+				BaseFragment fragment = mSectionsPagerAdapter.fragments.get(i);
+
+				// We don't need to reload it, if it's already loaded or loading
+				if (fragment.getStatus() == BaseFragment.EVENT_PENDING || fragment.getStatus() == BaseFragment.EVENT_FAILED) {
+					new Thread(mSectionsPagerAdapter.fragments.get(i)::refresh).start();
+				}
+			}
+
+			@Override
+			public void onPageScrolled(int i, float v, int i1) {
+				// this is required for the interface. We don't need this method.
+			}
+
+
+			@Override
+			public void onPageScrollStateChanged(int i) {
+				// this is required for the interface. We don't need this method.
+			}
+		});
+
 
 		bindToLocalService();
 	}

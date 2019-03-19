@@ -66,10 +66,10 @@ import java.util.Objects;
  */
 @SuppressWarnings({"WeakerAccess", "unused", "SameReturnValue"})
 abstract class BaseFragment extends Fragment {
-	protected final static byte EVENT_PENDING = 1;
-	protected final static byte EVENT_LOADING = 2;
-	protected final static byte EVENT_LOADED = 3;
-	protected final static byte EVENT_FAILED = 4;
+	public final static byte EVENT_PENDING = 1;
+	public final static byte EVENT_LOADING = 2;
+	public final static byte EVENT_LOADED = 3;
+	public final static byte EVENT_FAILED = 4;
 
 	protected BaseAdapter adapter;
 	private byte action = EVENT_PENDING;
@@ -220,6 +220,10 @@ abstract class BaseFragment extends Fragment {
 	@Override
 	public final Context getContext() {
 		return super.getContext() != null ? super.getContext() : super.getActivity();
+	}
+
+	public final byte getStatus() {
+		return this.action;
 	}
 
 	/**
