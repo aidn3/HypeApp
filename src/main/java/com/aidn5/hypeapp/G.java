@@ -85,6 +85,6 @@ public class G extends Application {
 	protected void attachBaseContext(Context context) {
 		super.attachBaseContext(context);
 
-		ACRA.init(this);
+		if (!BuildConfig.DEBUG) ACRA.init(this);
 	}
 }
