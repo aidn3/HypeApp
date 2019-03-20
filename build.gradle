@@ -74,6 +74,13 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     /*
+     https://github.com/google/gson
+     Gson is a Java library that can be used to convert Java Objects into their JSON representation.
+     It can also be used to convert a JSON string to an equivalent Java object
+     */
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    /*
      https://github.com/nhachicha/SnappyDB
      key-value database for Android it's an alternative for SQLite
      can outperform SQLite in read/write operations

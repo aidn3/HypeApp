@@ -22,40 +22,37 @@
  * SOFTWARE.
  */
 
+package net.hypixel.api.adapters;
 
-package com.aidn5.hypeapp.hypixelapi;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
-import com.aidn5.hypeapp.hypixelapi.exception.HypixelApiException;
+import java.lang.reflect.Type;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
-public final class HypixelReplay {
-	public final boolean isSuccess;
+/**
+ * Our dates are always saved as a timestamp
+ * if we diverge from that path we can adapt
+ * it in here as well by just using some more
+ * parsing.
+ */
+public class DateTimeTypeAdapter implements JsonDeserializer<ZonedDateTime>, JsonSerializer<ZonedDateTime> {
 
-	public final Object value;
-	public final String fullResponse;
-
-	public final HypixelApiException exception;
-	private final long dataOld;
-
-
-	HypixelReplay(HypixelApiException e, String fullResponse) {
-		exception = e;
-		this.fullResponse = fullResponse;
-
-		isSuccess = false;
-		value = null;
-		dataOld = -1;
+	@Override
+	public JsonElement serialize(ZonedDateTime src, Type typeOfSrc, JsonSerializationContext context) {
+		return new JsonPrimitive(src.toInstant().toEpochMilli());
 	}
 
-	public HypixelReplay(Object value, String fullResponse, long dataOld) {
-		this.value = value;
-		this.fullResponse = fullResponse;
-
-		isSuccess = true;
-		exception = null;
-		this.dataOld = dataOld;
+	@Override
+	public ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		return Instant.ofEpochMilli(Long.parseLong(json.getAsString())).atZone(ZoneId.of("America/New_York"));
 	}
 
-	public boolean isDataFromCache() {
-		return dataOld > 0;
-	}
 }

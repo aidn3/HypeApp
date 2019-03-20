@@ -37,10 +37,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
-import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.services.IgnProvider;
+import com.aidn5.hypeapp.services.Settings;
 import com.squareup.picasso.Picasso;
+
+import net.hypixel.api.HypixelAPI;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -66,20 +67,22 @@ public final class FriendsFragment extends BaseFragment {
 
 		// Load data
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		HypixelReplay friendsRequest = new FriendsRequest(context).getFriendsByUserUUID(settings);
+		try {
+			String[] friends = new HypixelAPI(context, settings)
+					.getFriends(settings)
+					.getFriends(
+							settings.getString(Settings.userUUID.name(), null))
+					.toArray(new String[0]);
 
-		String[] friends = (String[]) friendsRequest.value;
 
-		// Check on errors
-		if (!friendsRequest.isSuccess || friends == null) {
+			// Create the adapter and set it
+			this.adapter = new Adapter(getLayoutInflater(), context, new IgnProvider(context), friends);
+
+			setState(EVENT_LOADED); //Send signal to use and display the adapter
+		} catch (Exception e) {
+			e.printStackTrace();
 			setState(EVENT_FAILED);
-			return;
 		}
-
-		// Create the adapter and set it
-		this.adapter = new Adapter(getLayoutInflater(), context, new IgnProvider(context), friends);
-
-		setState(EVENT_LOADED); //Send signal to use and display the adapter
 	}
 
 	//todo: [feature] FriendsFragment: load the data of best-friends

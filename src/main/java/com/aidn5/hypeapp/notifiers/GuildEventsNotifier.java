@@ -31,14 +31,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.hypixelapi.GuildRequest;
-import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
-import com.aidn5.hypeapp.hypixelapi.models.Guild;
 import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
 import com.snappydb.SnappydbException;
+
+import net.hypixel.api.HypixelAPI;
+import net.hypixel.api.reply.GuildReply;
 
 import org.acra.ACRA;
 
@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+// FIXME: 20.03.2019 recreate GuildEventsNotifier and separate the events
 public final class GuildEventsNotifier extends NotifierFactory {
 
 	public GuildEventsNotifier(@NonNull Context context) {
@@ -61,16 +62,23 @@ public final class GuildEventsNotifier extends NotifierFactory {
 		boolean guildMemberLeaves = settings.getBoolean(Settings.showNotificationOnGuildMemberLeaves.name(), false);
 		boolean guildSelfLeaves = settings.getBoolean(Settings.showNotificationOnGuildSelfLeaves.name(), false);
 
+		if (true) throw new RuntimeException("disabled: fixme!");
+
 		if (!guildMemberJoins && !guildMemberLeaves && !guildSelfLeaves)
 			return;//Nothing checked? just return.
 
 		boolean isTheUserOnline = isTheUserOnline();// User online? no need to notify
 
-		HypixelReplay hypixelReplay = new GuildRequest(context).getGuildMembersByMemberUUID(settings);
-		if (!hypixelReplay.isSuccess || hypixelReplay.isDataFromCache())
-			return;//No updated data. -> nothing to do/update -> return;
+		GuildReply.Guild guild = null;
+		try {
+			guild = new HypixelAPI(context, settings)
+					.getGuildByPlayer(settings)
+					.getGuild();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 
-		Guild guild = (Guild) hypixelReplay.value;
 		boolean isInGuild = (guild != null);
 
 		isUserKickedEvent(eventsSaver, dm, isInGuild, guildSelfLeaves, isTheUserOnline);
@@ -82,12 +90,12 @@ public final class GuildEventsNotifier extends NotifierFactory {
 		}
 
 		String[] cachedMembers = getCachedGuildMembers(dm);
-		String[] members = guild.getUUIDMembers();
+		List<GuildReply.Guild.Member> members = guild.getMembers();
 
 		if (cachedMembers != null)
 			isMemberLeftJoinedEvent(eventsSaver, ignProvider, members, cachedMembers, guildMemberJoins, guildMemberLeaves, isTheUserOnline);
 
-		cacheGuildMembers(dm, members);
+		//cacheGuildMembers(dm, members));
 	}
 
 	@Override
@@ -149,18 +157,18 @@ public final class GuildEventsNotifier extends NotifierFactory {
 	 * @param guildMemberLeaves is showing notifications granted for leaving the guild event?
 	 * @param isTheUserOnline   is the user of this app is on hypixel network?
 	 */
-	private void isMemberLeftJoinedEvent(@NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull String[] members, @NonNull String[] cachedMembers, boolean guildMemberJoins, boolean guildMemberLeaves, boolean isTheUserOnline) {
+	private void isMemberLeftJoinedEvent(@NonNull EventsSaver eventsSaver, @NonNull IgnProvider ignProvider, @NonNull List<GuildReply.Guild.Member> members, @NonNull String[] cachedMembers, boolean guildMemberJoins, boolean guildMemberLeaves, boolean isTheUserOnline) {
 		if ((!guildMemberJoins && !guildMemberLeaves) || isTheUserOnline)
 			return; //No need to create objects, compare then show notifications
 
 		if (guildMemberJoins) {
 			List<String> cachedMembersList = Arrays.asList(cachedMembers);
 
-			for (String member : members) {
-				if (!cachedMembersList.contains(member)) {
+			for (GuildReply.Guild.Member member : members) {
+				if (!cachedMembersList.contains(member.getUuid())) {
 
-					String username = ignProvider.getUsername(member, false);
-					if (username == null) username = member;
+					String username = ignProvider.getUsername(member.getUuid(), false);
+					if (username == null) username = member.getUuid();
 
 					notificationFactory.notify(
 							context.getString(R.string.guildEventMemberJoinsTitle),
@@ -180,10 +188,8 @@ public final class GuildEventsNotifier extends NotifierFactory {
 		}
 
 		if (guildMemberLeaves) {
-			List<String> membersList = Arrays.asList(members);
-
 			for (String member : cachedMembers) {
-				if (!membersList.contains(member)) {
+				if (!members.contains(member)) {
 
 					String username = ignProvider.getUsername(member, false);
 					if (username == null) username = member;

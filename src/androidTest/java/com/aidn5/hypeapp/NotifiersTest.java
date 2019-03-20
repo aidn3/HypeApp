@@ -37,6 +37,7 @@ import com.aidn5.hypeapp.notifiers.NotifierFactory;
 import com.aidn5.hypeapp.notifiers.app.AppAnnouncementsEvent;
 import com.aidn5.hypeapp.notifiers.friends.FriendIgnChangeEvent;
 import com.aidn5.hypeapp.notifiers.friends.FriendRemovalEvent;
+import com.aidn5.hypeapp.services.AbstractedCacher;
 import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
@@ -46,8 +47,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
@@ -152,7 +151,7 @@ public class NotifiersTest {
 
 		//////////  look-up these SAMPLE_UUID_1, change one of them from the saved database,  //////////
 		//////////                Look-up again and expect a notification                     //////////
-		Method ignProviderPutUserIntoDB = IgnProvider.class.getDeclaredMethod("putUserIntoDB", String.class, String.class);
+		Method ignProviderPutUserIntoDB = AbstractedCacher.class.getDeclaredMethod("insertIntoDB", String.class, String.class);
 		ignProviderPutUserIntoDB.setAccessible(true);
 
 		Method lookUpUUIDs = FriendIgnChangeEvent.class.getDeclaredMethod("lookUpUUIDs", EventsSaver.class, IgnProvider.class, String[].class);
@@ -199,13 +198,13 @@ public class NotifiersTest {
 	@Test
 	public void testForumsEventsNotifier() {
 		ForumsEventsNotifier forumsEventsNotifier = new ForumsEventsNotifier(context);
-		Result result = JUnitCore.runClasses(NotifiersTest.class);
-
+		forumsEventsNotifier.doLoop(dataManager, eventsSaver, ignProvider, preferences);
 	}
 
 	@Test
 	public void testGuildEventsNotifier() {
 		GuildEventsNotifier guildEventsNotifier = new GuildEventsNotifier(context);
+		guildEventsNotifier.doLoop(dataManager, eventsSaver, ignProvider, preferences);
 	}
 
 	@After

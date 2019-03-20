@@ -29,6 +29,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.aidn5.hypeapp.services.AbstractedCacher;
 import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
@@ -200,12 +201,12 @@ public class ServicesTest {
 
 	@Test
 	public void testIgnProvider() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		Method putUserIntoDB = IgnProvider.class.getDeclaredMethod("putUserIntoDB", String.class, String.class);
-		putUserIntoDB.setAccessible(true);
+		Method insertIntoDB = AbstractedCacher.class.getDeclaredMethod("insertIntoDB", String.class, String.class);
+		insertIntoDB.setAccessible(true);
 
 		Assert.assertNotNull(ignProvider.getUsername(SAMPLE_UUID_1[0], true));
 
-		putUserIntoDB.invoke(ignProvider, SAMPLE_UUID_1[0], ".");
+		insertIntoDB.invoke(ignProvider, SAMPLE_UUID_1[0], ".");
 		Assert.assertEquals(".", ignProvider.getUsername(SAMPLE_UUID_1[0], false));
 		Assert.assertNotEquals(".", ignProvider.getUsername(SAMPLE_UUID_1[0], true));
 	}

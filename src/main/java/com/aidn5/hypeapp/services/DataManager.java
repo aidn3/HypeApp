@@ -62,6 +62,10 @@ public final class DataManager {
 		return db.get(key, className);
 	}
 
+	public synchronized <T extends Serializable> T[] getArray(@NonNull String key, @NonNull Class<T> className) throws SnappydbException {
+		return db.getArray(key, className);
+	}
+
 	public synchronized boolean put(String key, Serializable serializable) {
 		try {
 			db.put(key, serializable);

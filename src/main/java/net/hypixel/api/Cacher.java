@@ -22,12 +22,34 @@
  * SOFTWARE.
  */
 
+package net.hypixel.api;
 
-package com.aidn5.hypeapp.hypixelapi.exception;
+import android.content.Context;
+import android.support.annotation.NonNull;
 
-public enum ExceptionTypes {
-	Unknown, Parse,
-	NoHypixelApi, NoUserUUID,
-	Internet,
-	API_Error, Throttle
+import com.aidn5.hypeapp.services.AbstractedCacher;
+
+public class Cacher extends AbstractedCacher {
+
+	public Cacher(@NonNull Context context) {
+		super(context);
+	}
+
+	public CachedData get(Class clazz, Object... values) {
+		return getByKeyFromDB(generateKey(clazz, values));
+	}
+
+	public void save(Class clazz, String data, Object... values) {
+		insertIntoDB(generateKey(clazz, values), data);
+	}
+
+	private String generateKey(Class clazz, Object... values) {
+		StringBuilder data = new StringBuilder(clazz.getSimpleName());
+
+		for (int i = 0; i < values.length - 1; i += 2) {
+			data.append("_").append(values[i]).append("_").append(values[i + 1]);
+		}
+
+		return data.toString();
+	}
 }

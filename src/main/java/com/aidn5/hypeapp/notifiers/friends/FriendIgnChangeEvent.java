@@ -32,13 +32,13 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
-import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
 import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
+
+import net.hypixel.api.HypixelAPI;
 
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -196,7 +196,15 @@ public final class FriendIgnChangeEvent extends NotifierFactory {
 	@Nullable
 	private String[] getPlayersUUID(SharedPreferences sp) {
 		//TODO: [Feature] FriendIgnChangeEvent#getPlayersUUID: add include exclude to settings
-		HypixelReplay hypixelReplay = new FriendsRequest(context).getFriendsByUserUUID(sp);
-		return (String[]) hypixelReplay.value; // Either null or String[]
+		try {
+			return new HypixelAPI(context, sp)
+					.getFriends(sp)
+					.getFriends(
+							sp.getString(Settings.userUUID.name(), null))
+					.toArray(new String[0]);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

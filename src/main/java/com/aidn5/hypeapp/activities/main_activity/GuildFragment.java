@@ -39,15 +39,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.hypixelapi.GuildRequest;
-import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
-import com.aidn5.hypeapp.hypixelapi.models.Guild;
-import com.aidn5.hypeapp.hypixelapi.models.GuildMember;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.squareup.picasso.Picasso;
 
+import net.hypixel.api.HypixelAPI;
+import net.hypixel.api.reply.GuildReply;
+
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -77,28 +75,29 @@ public final class GuildFragment extends BaseFragment {
 			return;
 		}
 
-		// Load data
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		HypixelReplay friendsRequest = new GuildRequest(context).getGuildMembersByMemberUUID(settings);
+		try {
+			// Load data
+			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+			GuildReply.Guild guild = new HypixelAPI(context, settings)
+					.getGuildByPlayer(settings)
+					.getGuild();
 
-		// Check on errors
-		if (!friendsRequest.isSuccess) {
+			if (guild == null) {
+				setState(NO_GUILD_FOUND);
+				return;
+			}
+
+			// Create the adapter and set it
+			this.adapter = new Adapter(
+					getLayoutInflater(), context, new IgnProvider(context),
+					guild);
+
+			setState(EVENT_LOADED); //Send signal to use and display the adapter
+		} catch (Exception e) {
 			setState(EVENT_FAILED);
-			return;
 		}
 
-		Guild guild = (Guild) friendsRequest.value;
-		if (guild == null) {
-			setState(NO_GUILD_FOUND);
-			return;
-		}
 
-		// Create the adapter and set it
-		this.adapter = new Adapter(
-				getLayoutInflater(), context, new IgnProvider(context),
-				guild.getDetailedGuildMembers());
-
-		setState(EVENT_LOADED); //Send signal to use and display the adapter
 	}
 
 	private final class Adapter extends BaseAdapter {
@@ -107,22 +106,22 @@ public final class GuildFragment extends BaseFragment {
 		private final Picasso imageLoader;
 
 		private final LayoutInflater inflater;
-		private final List<GuildMember> guildMembers;
+		private final GuildReply.Guild guild;
 
-		Adapter(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull IgnProvider ignProvider, @NonNull List<GuildMember> guildMembers) {
+		Adapter(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull IgnProvider ignProvider, @NonNull GuildReply.Guild guild) {
 			this.inflater = inflater;
 			this.imageLoader = new Picasso.Builder(context).build();
-			this.guildMembers = guildMembers;
+			this.guild = guild;
 
-			Collections.sort(guildMembers); // Sort from guild master to officer to ... to member...
+			Collections.sort(guild.getMembers()); // Sort from guild master to officer to ... to member...
 
-			for (GuildMember guildMember : guildMembers) {
+			for (GuildReply.Guild.Member guildMember : guild.getMembers()) {
 				poolExecutor.execute(new Runnable() {
 					@Override
 					public void run() {
 						//IgnProvider will either returns null or the result
 						//the username is NULL anyways. So, don't check the value
-						guildMember.username = ignProvider.getUsername(guildMember.uuid, false);
+						guildMember.username = ignProvider.getUsername(guildMember.getUuid(), false);
 					}
 				});
 			}
@@ -130,7 +129,7 @@ public final class GuildFragment extends BaseFragment {
 
 		@Override
 		public int getCount() {
-			return this.guildMembers.size();
+			return this.guild.getMembers().size();
 		}
 
 		@Override
@@ -147,7 +146,7 @@ public final class GuildFragment extends BaseFragment {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = convertView;
 			final Holder holder;
-			GuildMember guildMember = this.guildMembers.get(position);
+			GuildReply.Guild.Member guildMember = this.guild.getMembers().get(position);
 
 			if (view == null) {
 				holder = new Holder();
@@ -166,13 +165,13 @@ public final class GuildFragment extends BaseFragment {
 			holder.text1.setText(
 					String.format(
 							"[%s] %s",
-							guildMember.rank,
-							(guildMember.username != null) ? guildMember.username : guildMember.uuid));
+							guildMember.getRank().getName(),
+							(guildMember.username != null) ? guildMember.username : guildMember.getUuid()));
 
-			if (guildMember.tag != null && !guildMember.tag.isEmpty()) {
+			if (guildMember.getRank().getTag() != null && !guildMember.getRank().getTag().isEmpty()) {
 				holder.tag.setVisibility(View.VISIBLE);
 
-				holder.tag.setText(guildMember.tag);
+				holder.tag.setText(guildMember.getRank().getTag());
 				holder.tag.setTextColor(ChatColors.GOLD.getSecondaryColor());
 				holder.tag.setBackgroundColor(ChatColors.GOLD.getPrimaryColor());
 			} else {
@@ -181,7 +180,7 @@ public final class GuildFragment extends BaseFragment {
 
 
 			this.imageLoader
-					.load("https://crafatar.com/avatars/" + guildMember.uuid + "?overlay&default=MHF_Alex")
+					.load("https://crafatar.com/avatars/" + guildMember.getUuid() + "?overlay&default=MHF_Alex")
 					.placeholder(R.drawable.default_player_head)
 					.into(holder.head);
 

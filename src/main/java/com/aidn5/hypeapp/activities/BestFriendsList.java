@@ -32,14 +32,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.aidn5.hypeapp.G;
 import com.aidn5.hypeapp.R;
 import com.aidn5.hypeapp.Utils;
-import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
-import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
+import com.aidn5.hypeapp.services.Settings;
+
+import net.hypixel.api.HypixelAPI;
 
 //The code is executed in this way
 // onCreate(): bind to the background service
@@ -125,24 +125,19 @@ public class BestFriendsList extends BaseActivity {
 
 		@Override
 		protected String doInBackground(Void... voids) {
-			HypixelReplay hypixelReplay = new FriendsRequest(activity).getFriendsByUserUUID(settings);
-			if (!hypixelReplay.isSuccess) {
-				hypixelReplay.exception.getMessage();
-				errorDialog = hypixelReplay.exception.getMessage();
+			//// FIXME: 20.03.2019 recreate BestFriendsList.java
+			try {
+				friends = new HypixelAPI(activity, settings)
+						.getFriends(settings)
+						.getFriends(
+								settings.getString(
+										Settings.userUUID.name(), null))
+						.toArray(new String[0]);
 
-				String typeErrorMessage = hypixelReplay.exception.getErrorTypeMessage(activity);
-				if (typeErrorMessage != null) errorDialog = typeErrorMessage;
+				onSuccess = true;
+			} catch (Exception e) {
 
-				stacktrace = hypixelReplay.exception.getMessage() +
-						"\r\n\r\n" + Log.getStackTraceString(hypixelReplay.exception) +
-						"\r\n\r\n" + hypixelReplay.fullResponse;
-				return errorDialog;
 			}
-
-			friends = (String[]) hypixelReplay.value;
-
-			onSuccess = true;
-
 			return null;
 		}
 	}

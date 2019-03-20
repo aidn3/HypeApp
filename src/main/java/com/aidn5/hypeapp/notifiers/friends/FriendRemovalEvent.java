@@ -31,13 +31,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aidn5.hypeapp.R;
-import com.aidn5.hypeapp.hypixelapi.FriendsRequest;
-import com.aidn5.hypeapp.hypixelapi.HypixelReplay;
 import com.aidn5.hypeapp.notifiers.NotifierFactory;
 import com.aidn5.hypeapp.services.DataManager;
 import com.aidn5.hypeapp.services.EventsSaver;
 import com.aidn5.hypeapp.services.IgnProvider;
 import com.aidn5.hypeapp.services.Settings;
+
+import net.hypixel.api.HypixelAPI;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,8 +48,6 @@ import java.util.List;
  * from their friends list while they being offline
  */
 public final class FriendRemovalEvent extends NotifierFactory {
-	private static final String SETTINGS_FRIENDS_UUID = FriendRemovalEvent.class.getSimpleName() + "_FriendsUUID";
-
 	public FriendRemovalEvent(@NonNull Context context) {
 		super(context);
 	}
@@ -128,8 +126,16 @@ public final class FriendRemovalEvent extends NotifierFactory {
 	 */
 	@Nullable
 	private String[] getFriendsUUIDsFromNet(SharedPreferences sp) {
-		HypixelReplay hypixelReplay = new FriendsRequest(context).getFriendsByUserUUID(sp);
-		return (String[]) hypixelReplay.value;
+		try {
+			return new HypixelAPI(context, sp)
+					.getFriends(sp)
+					.getFriends(
+							sp.getString(Settings.userUUID.name(), null))
+					.toArray(new String[0]);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
